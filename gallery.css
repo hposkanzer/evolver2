@@ -1,0 +1,48 @@
+@CHARSET "ISO-8859-1";
+
+.thumb {
+	border: 1px rgb(0, 0, 0) solid;
+	width: 150px;
+	height: 112px;
+}
+
+.linkedthumb {
+	border: 1px rgb(0, 0, 255) solid;
+	width: 150px;
+	height: 112px;
+}
+
+.image {
+	border: 1px rgb(0, 0, 0) solid;
+	width: 800px;
+	height: 600px;
+}
+
+.genomeTable {
+	border-collapse: collapse;
+	border-top: 1px solid #000;
+}
+
+.genomeCell {
+	border-left: 1px solid #000;
+	border-right: 1px solid #000;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-right: 5px;
+	vertical-align: top;
+	font-size: small;
+}
+
+.srcimgCell {
+	border-bottom: 1px solid #000;
+}
+
+.ancestorTable {
+	border-collapse: collapse;
+}
+
+.ancestorCell {
+	border: 1px solid #000;
+	padding: 5px;
+}	
+

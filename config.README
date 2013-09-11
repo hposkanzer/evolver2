@@ -1,0 +1,30 @@
+// Since we can't include comments in JSON files (LAME!),
+// I must document the config params in this separate file.
+{
+// Initial number of creatures.
+  "start": 5, 
+// Number of children that evolve from each parent.
+  "progeny": 5,
+// Minimum and maximum number of initial transforms per creature.
+  "min_depth": 3,
+  "max_depth": 10, 
+// Fraction of transformers that are tweaked in the child when evolving a creature.
+// Tweaking is the mutation of a transformers arguments.
+  "tweak_rate": 0.8, 
+// Fraction of child creatures that are mutated when evolving a creature.
+// Mutation is the adding, removing, or re-ordering of transformers.
+  "mutation_rate": 0.8,
+// Size of thumbnails to generate.  This is the maximum number of pixels of height or width.
+// The front-end may display them at a different size.
+  "thumbnail_size": 150, 
+// Number of columns on pages of thumbnails.
+  "index_columns": 5
+// Width and height of creature images.
+// These are calculated and inserted into config.json when you run make_sources.py.  
+  "img_width": 800, 
+  "img_height": 609, 
+// Width and height of creature thumbnails.
+// These are calculated and inserted into config.json when you run make_sources.py.  
+  "thumb_width": 150, 
+  "thumb_height": 114, 
+}

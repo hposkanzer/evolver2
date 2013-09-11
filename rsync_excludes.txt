@@ -1,0 +1,7 @@
+.svn
+*.pyc
+exps
+srcimgs
+examples
+logs
+gallery

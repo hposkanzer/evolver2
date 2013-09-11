@@ -1,0 +1,15 @@
+{
+  "thumb_height": 112, 
+  "thumb_width": 150, 
+  "thumbnail_size": 150, 
+  "progeny": 5, 
+  "tweak_rate": 0.80000000000000004, 
+  "img_width": 800, 
+  "max_depth": 8, 
+  "min_depth": 2, 
+  "start": 5, 
+  "img_height": 600, 
+  "debug": false, 
+  "index_columns": 5, 
+  "mutation_rate": 0.80000000000000004
+}
