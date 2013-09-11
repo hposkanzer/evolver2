@@ -463,10 +463,23 @@ function Thumb(ring, parentThumb) {
 
 	this.onFail = function() {
 		self.thumb.src = "broken.jpg";
-                self.on_arrive_src = "broken.jpg";
+		self.on_arrive_src = "broken.jpg";
 	};
 
 
+	this.hide = function() {
+        var data = {"e": experimentName, "c": self.name};
+        $.ajax({
+            type: "GET",
+            url: "/cgi-bin/hide_creature.py", 
+            data: data,
+            dataType: "json",
+            async: true,
+            error: self.onFail // Doesn't get called when we're using jsonp.
+        });
+	};
+	
+	
 	this.mutate = function() {
 		newThumbs(thumbCountIncrement, self);
 	};
@@ -517,6 +530,7 @@ function Thumb(ring, parentThumb) {
 				"Mutate!": function() { self.closeDialog(); self.mutate(); },
 				"More Info": function() { window.open(self.page_url); },
 				"Add To Gallery": function() { window.open(self.gallery_url); },
+                "Delete": function() { self.closeDialog(); self.hide(); },
 				"Close": function() { self.closeDialog(); }
 			}
 		});
@@ -656,6 +670,9 @@ function restoreThumbs(thumbInfos) {
 	var thumbsByName = {}; // { thumb_name : thumbInfo }
 	for (var i=0; i<thumbInfos.length; i++) {
 		var thumbInfo = thumbInfos[i];
+		if (thumbInfo.hidden) {
+		    continue;
+		}
 		thumbsByName[thumbInfo.name] = thumbInfo;
 	}
 
@@ -664,7 +681,9 @@ function restoreThumbs(thumbInfos) {
 	var thumbsByRing = new Array();
 	while (thumbInfos.length) {
 		var thumbInfo = thumbInfos.shift();
-		if (thumbInfo.parent == null) {
+        if (thumbInfo.hidden) {
+            continue;
+        } else if (thumbInfo.parent == null) {
 			// Ring 0.  We can place it now.
 			thumbInfo.ringIndex = 0;
 		} else {
@@ -679,7 +698,7 @@ function restoreThumbs(thumbInfos) {
 					continue;
 				}
 			} else {
-				// Parent doesn't exist.  Toss it.
+				// Parent doesn't exist or is hidden.  Toss the child.
 				continue;
 			}
 		}

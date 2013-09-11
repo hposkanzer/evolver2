@@ -3,13 +3,13 @@
   "thumb_width": 150, 
   "thumbnail_size": 150, 
   "progeny": 5, 
-  "tweak_rate": 0.80000000000000004, 
-  "img_width": 800, 
-  "max_depth": 8, 
-  "min_depth": 2, 
-  "start": 5, 
+  "tweak_rate": 0.8, 
   "img_height": 600, 
-  "debug": false, 
+  "img_width": 800, 
   "index_columns": 5, 
-  "mutation_rate": 0.80000000000000004
+  "start": 5, 
+  "min_depth": 2, 
+  "debug": false, 
+  "max_depth": 8, 
+  "mutation_rate": 0.8
 }

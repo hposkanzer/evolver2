@@ -27,17 +27,17 @@ class Location:
     
         self.project_name = "evolver2"
 
-        # Home Ubuntu
-        self.base_dir = "/home/hmp/fun/best/htdocs/evolver2"
-        self.base_url = "http://localhost/%s" % (self.project_name)
+        # Home Mac
+        self.base_dir = "/Users/hmp/Documents/workspace/evolver2"
+        self.base_url = "http://localhost/~hmp/%s" % (self.project_name)
         if not os.path.isdir(self.base_dir):
             # Production
             self.base_dir = "/usr/home/harold/www/htdocs/evolver2"
             self.base_url = "http://drzeus.best.vwh.net/%s" % (self.project_name)
         if not os.path.isdir(self.base_dir):
             # Work Mac
-            self.base_dir = "/Users/hmp/Documents/workspace/evolver2"
-            self.base_url = "http://localhost:8000/%s" % (self.project_name)
+            self.base_dir = "/Users/hmp/Documents/best/evolver2"
+            self.base_url = "http://localhost/~hmp/%s" % (self.project_name)
         if not os.path.isdir(self.base_dir):
             # Home Windows
             self.base_dir = "C:\\Users\\family\\Documents\\workspace\\Evolver 2"

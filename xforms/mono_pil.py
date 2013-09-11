@@ -130,7 +130,7 @@ class Rotate(_xformer._MonoTransformer):
         (ow, oh) = self.getDims()
         w = ow - ((ow-oh) * s) - ((ow-oh) * s * c * 2)
         h = float(oh)/ow * w
-        coords = ((img.size[0]-w)/2, (img.size[1]-h)/2, (img.size[0]+w)/2, (img.size[1]+h)/2)
+        coords = map(int, ((img.size[0]-w)/2, (img.size[1]-h)/2, (img.size[0]+w)/2, (img.size[1]+h)/2))
         return img.crop(coords).resize(self.getDims(), Image.BILINEAR)
     
     def tweakInner(self):

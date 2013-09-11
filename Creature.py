@@ -23,6 +23,7 @@ class Creature(Picklable.Picklable):
         self.id = name or self.generateID()
         self.head = None
         self.ancestorName = ""
+        self.hidden = False
 
         
     def __str__(self):
@@ -71,6 +72,7 @@ class Creature(Picklable.Picklable):
            "thumb_url" : self.getThumbURL(),
            "parent" : self.ancestorName or None,
            "gallery_url" : self.getGalleryURL(),
+           "hidden" : self.hidden,
            }
         return ret
 
@@ -81,6 +83,13 @@ class Creature(Picklable.Picklable):
         self.head = self.makeGenome(depth)
         
         
+    #################################################################
+    def hide(self):
+        self.logger.debug("Hiding %s..." % (self))
+        self.hidden = True
+        self.saveConfig()
+
+    
     #################################################################
     def evolve(self):
         self.logger.debug("Evolving %s..." % (self))
@@ -240,7 +249,7 @@ class Creature(Picklable.Picklable):
         self.logger.debug("Creating page for %s..." % (self))
         f = open(fname, "w")
         f.write("<html>\n<head><title>Experiment %s, Creature %s</title>\n" % (self.experiment.getName(), self.getID()))
-        f.write('<link rel="stylesheet" type="text/css" href="/evolver2/gallery.css" />\n')
+        f.write('<link rel="stylesheet" type="text/css" href="../../../gallery.css" />\n')
         f.write("</head>\n<body>\n")
         f.write("<font size='-1'><a href='/'>Chez Zeus</a> &gt; <a href='../../../index.html'>Photo Evolver 2</a> &gt; <a href='../index.html'>Experiment</a></font>\n")
         f.write("<center>\n<h2>Creature %s</h2>\n" % (self.getID()))
@@ -385,5 +394,6 @@ class Creature(Picklable.Picklable):
         f.close()
         self.head = creature.head
         self.ancestorName = creature.ancestorName
+        self.hidden = creature.hidden
         
     

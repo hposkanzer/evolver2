@@ -196,6 +196,21 @@ class Experiment(Picklable.Picklable):
         return Creature.Creature(self, name)
     
     ##############################################################
+    def hideCreature(self, creatureName):
+        t0 = time.time()
+        self.loadConfig()
+        self.loadImages()
+        self.loadTransforms()
+        creature = self.getCreature(creatureName)
+        self.logger.info("Hiding %s in %s..." % (creature, self))
+        creature.loadConfig()
+        creature.hide()
+        t1 = time.time()
+        self.logger.info("%s in %s complete in %.2f seconds." % (creature, self, t1-t0))
+        return creature
+
+
+    ##############################################################
     def loadImages(self):
         if self.srcimgs:
             return

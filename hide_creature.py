@@ -8,17 +8,18 @@ import traceback
 import string
 import logging
 
+import Location
 import Picklable
 import Experiment
+import UsageError
 
 
 def usage( msg=None ):
     if msg:
         sys.stderr.write( "ERROR:  %s\n" % (msg) )
-    sys.stderr.write( "Usage:  %s [--debug] [--local-only] [--no-op] [name]\n" % (os.path.basename(sys.argv[0])) )
-    sys.stderr.write( "  local-only:  Keep thumbnails on the local disk, instead of S3.\n")
-    sys.stderr.write( "  no-op:  Do not generate creatures or preserve state.\n")
-    sys.stderr.write( "  name:  Create this experiment name.  If not provided, a name is generated.\n")
+    sys.stderr.write( "Usage:  %s [--debug] -e exp -c creature\n" % (os.path.basename(sys.argv[0])) )
+    sys.stderr.write( "  exp:  The name of the experiment in which to create the creature.\n")
+    sys.stderr.write( "  creature:  The name of the creature to hide.\n")
     sys.exit(-1)
     
     
@@ -36,13 +37,13 @@ def main():
             (odict, args) = getOptions()
         (odict, args) = processOptions(odict, args)
             
-        if args:
-            url = newExperiment(odict, args[0])
-        else:
-            url = newExperiment(odict)
+        data = hideCreature(odict, odict["e"], odict["c"])
+        data = Location.getJsonModule().dumps(data, indent=2)
         
-        print "Location: %s" % (url)
+        print "Content-type: application/json"
+        print "Content-length: %s" % (len(data))
         print
+        print data
 
     except:
         msg = string.join(apply( traceback.format_exception, sys.exc_info() ), "")
@@ -57,41 +58,33 @@ def main():
         print data
 
 
-def newExperiment(odict, name=None):
+def hideCreature(odict, exp, creature):
     
-    exp = Experiment.Experiment(name)
-    exp.initialize(odict.get("local-only", False), odict.get("no-op", False), odict.get("debug", False))
+    exp = Experiment.Experiment(exp)
+    creature = exp.hideCreature(creature)
+    return creature.getInfo()
     
-    return exp.getURL()
-
 
 def getCGIOptions():
     
     odict = cgi.parse()
     args = []
     
-    if int(odict.get("local-only", [0])[0]):
-        odict["local-only"] = True
-    else:
-        odict["local-only"] = False
+    if not odict.has_key("e"):
+        raise UsageError.UsageError("No experiment specified")
+    odict["e"] = odict["e"][0]
     
-    if int(odict.get("no-op", [0])[0]):
-        odict["no-op"] = True
-    else:
-        odict["no-op"] = False
-
-    if int(odict.get("debug", [0])[0]):
-        odict["debug"] = True
-    else:
-        odict["debug"] = False
-
+    if not odict.has_key("c"):
+        raise UsageError.UsageError("No creature specified")
+    odict["c"] = odict["c"][0]
+    
     return (odict, args)
-    
+
 
 def getOptions():
     
     try:
-        (tt, args) = getopt.getopt( sys.argv[1:], "h", ["help", "debug", "local-only", "no-op"] )
+        (tt, args) = getopt.getopt( sys.argv[1:], "he:c:", ["help", "debug"] )
     except getopt.error:
         usage( str(sys.exc_info()[1]) )
 
@@ -106,24 +99,26 @@ def getOptions():
 
     if (odict.has_key("h") or odict.has_key("help")):
         usage()
-        
-    if odict.has_key("local-only"):
-        odict["local-only"] = True
-        
-    if odict.has_key("no-op"):
-        odict["no-op"] = True
 
-    return (odict, args)
+    if not odict.has_key("e"):
+        usage()
+        
+    if not odict.has_key("c"):
+        usage()
+        
+    return odict, args
 
 
 def processOptions(odict, args):
 
-    if (len(args) > 1):
+    if (len(args) > 0):
         usage()
+
+    if not Picklable.isValidID(odict["e"]):
+        raise Picklable.InvalidID(odict["e"])
+    if not Picklable.isValidID(odict["c"]):
+        raise Picklable.InvalidID(odict["c"])
         
-    if ((len(args) > 0) and not Picklable.isValidID(args[0])):
-        raise Picklable.InvalidID(args[0])
-    
     if odict.has_key("debug"):
         logging.getLogger().setLevel(logging.DEBUG)
         
