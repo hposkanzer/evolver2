@@ -1,0 +1,9 @@
+*.pyc
+/srcimgs/
+.project
+.settings
+.pydevproject
+/examples/
+/exps/
+/gallery/
+/logs/
