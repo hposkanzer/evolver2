@@ -37,7 +37,7 @@ class Location:
         if not os.path.isdir(self.base_dir):
             # Work Mac
             self.base_dir = "/Users/hmp/Documents/best/evolver2"
-            self.base_url = "http://localhost/~hmp/%s" % (self.project_name)
+            self.base_url = "http://localhost:8000/%s" % (self.project_name)
         if not os.path.isdir(self.base_dir):
             # Home Windows
             self.base_dir = "C:\\Users\\family\\Documents\\workspace\\Evolver 2"
