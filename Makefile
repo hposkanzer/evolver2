@@ -30,7 +30,7 @@ EXECS=get_creatures.py \
 	gallery.py \
 	make_examples.py \
 	make_sources.py \
-	make_examples.py
+	hide_creature.py
 	
 xfer:
 	rsync -auv --exclude-from ./rsync_excludes.txt . drzeus.best.vwh.net:www/htdocs/evolver2
