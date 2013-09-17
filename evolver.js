@@ -837,8 +837,29 @@ function drawCanvas() {
 		ctx.arc(0, 0, ring.radius, 0, Math.PI * 2, true);
 		ctx.stroke();
 
-		// Draw the lines if this isn't Ring 0.
+		// If this isn't Ring 0.
 		if (i > 0) {
+			
+			if (debug) {
+				// Draw the broods.
+				if (i > 0) {
+					for (var j = 0; j < ring.broods.length; j++) {
+						var brood = ring.broods[j];
+						ctx.fillStyle = "rgb(200,255,200)";
+						ctx.beginPath();
+						var coords = toCenterFromThumb(brood.parentThumb);
+						ctx.moveTo(coords[0], coords[1]);
+						for (var k = 0; k < brood.thumbs.length; k++) {
+							coords = toCenterFromThumb(brood.thumbs[k]);
+							ctx.lineTo(coords[0], coords[1]);
+						}
+						ctx.closePath();
+						ctx.fill();
+					}
+				}
+			}
+
+			// Draw the lines between thumbs.
 			ctx.lineWidth = lineWidth;
 			ctx.strokeStyle = "rgb(" + lineColor + ")";
 			ctx.beginPath();
@@ -853,11 +874,12 @@ function drawCanvas() {
 				}
 			}
 			ctx.stroke();
+			
 		}
 
-		// Draw the radius.
 		if (debug) {
 			if (ctx.strokeText) {
+				// Draw the radius.
 				ctx.lineWidth = 0.5;
 				ctx.strokeStyle = "rgb(255,0,0)";
 				ctx.font = "20pt Arial";
