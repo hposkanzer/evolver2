@@ -47,6 +47,11 @@
 	z-index: 3;
 }
 
+#more {
+	position: absolute;
+	cursor: hand;
+}
+
 #msg {
 	position: absolute;
 	color: rgb(255, 120, 120);

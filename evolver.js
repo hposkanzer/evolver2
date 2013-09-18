@@ -13,6 +13,8 @@ var WIDTH;
 var HEIGHT;
 var animStepCount = 0;
 var animStepModulo = 10;
+var moreWidth = 16;
+var moreHeight = 16;
 
 //Ring stuff
 var rings = new Array();
@@ -671,7 +673,10 @@ function init() {
 		msg("<h2>Doh! Your browser does not support the &lt;canvas&gt; element!</h2>Perhaps you should switch to a modern browser such as <a href='http://www.rockmelt.com/'>Rockmelt</a>.");
 	}
 
-	// Now get the creature state.
+	// Place the + button.
+	initMore();
+
+	// Init the creatures.
 	$.ajax({
 		type: "GET",
 		url: "/cgi-bin/get_creatures.py", 
@@ -696,6 +701,22 @@ function initConfig(data) {
 	thumbCountIncrement = data.progeny;
 	debug = data.debug;
 
+}
+
+
+function initMore() {
+	var corner = new Array(2);
+	corner[0] = 0 - moreWidth/2 + WIDTH/2;
+	corner[1] = 0 - moreHeight/2 + HEIGHT/2;
+	$("#more").css({
+		width: moreWidth, 
+		height: moreHeight,
+		left: corner[0] + "px",
+		top: corner[1] + "px"
+	});
+	$("#more").click(function() {
+		rings[0].newThumbs(thumbInitialCount, null);
+	});
 }
 
 

@@ -79,6 +79,7 @@ class Experiment(Picklable.Picklable):
     question_mark = "qm.jpg"
     loading = "loading.gif"
     broken = "broken.jpg"
+    more = "plus.png"
     srcimg_dir = "srcimgs"
     xforms_dir = "xforms"
     creatures_dir = "creatures"
@@ -107,6 +108,7 @@ class Experiment(Picklable.Picklable):
         self.copyFromBase(self.question_mark)
         self.copyFromBase(self.loading)
         self.copyFromBase(self.broken)
+        self.copyFromBase(self.more)
         # For now we're going to use the same set of images & xforms for every experiment.
         self.copyFromBase(self.srcimg_dir)
         self.copyFromBase(self.xforms_dir)
