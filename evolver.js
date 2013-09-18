@@ -145,6 +145,13 @@ function Ring(index) {
 	};
 	
 
+	this.removeBrood = function(brood) {
+		brood.nextBrood.prevBrood = brood.prevBrood;
+		brood.prevBrood.nextBrood = brood.nextBrood;
+		self.broods.splice(self.broods.indexOf(brood), 1);
+	};
+	
+
 	// Figure out where in the thumb array to insert the new thumb.
 	this.getNewThumbIndex = function(parentThumb) {
 		if (parentThumb == null) {
@@ -262,18 +269,15 @@ function Brood(parentThumb) {
 
 	
 	this.removeThumb = function(thumb) {
-		var i = self.thumbs.indexOf(thumb);
-		self.thumbs.splice(i, 1);
+		self.thumbs.splice(self.thumbs.indexOf(thumb), 1);
 		self.idealSpread = self.thumbs.length * Math.asin(idealSpacing/thumb.ring.radius);
 	}
 	
 	
-	this.hide = function() {
+	this.hideThumbs = function() {
 		for (var i = 0; i < self.thumbs.length; i++) {
 			self.thumbs[i].hide();
 		}
-		self.thumbs = new Array();
-		self.idealSpread = 0.0;
 	}
 
 	
@@ -820,6 +824,9 @@ function newThumbs(thumbCount, parentThumb) {
 function hideThumb(thumb) {
 	thumb.hide();
 	thumb.brood.removeThumb(thumb);
+	if (thumb.brood.thumbs.length == 0) {
+		thumb.ring.removeBrood(thumb.brood);
+	}
 	if (thumb.childBrood != null) {
 		thumb.ring.distributeThumbs(false);
 		window.setTimeout(hideBroods, fbaSleepBetweenRings, [thumb.childBrood]);
@@ -841,7 +848,8 @@ function hideBroods(broods) {
 				childBroods.push(thumb.childBrood);
 			}
 		}
-		brood.hide();
+		brood.hideThumbs();
+		ring.removeBrood(brood);
 	}
 	if (childBroods.length > 0) {
 		ring.distributeThumbs(false);
