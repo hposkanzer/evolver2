@@ -73,6 +73,9 @@ function Ring(index) {
 
 	this.newThumbs = function(thumbCount, parentThumb) {
 		var brood = self.getBrood(parentThumb);
+		if (parentThumb != null) {
+			parentThumb.childBrood = brood;
+		}
 		for (var i = 0; i < thumbCount; i++) {
 			var thumb = new Thumb(self, parentThumb);
 			brood.addThumb(thumb);
@@ -194,19 +197,24 @@ function Ring(index) {
 	this.distributeThumbs = function(recurseOut) {
 		if (self.index == 0) {
 			// Ring 0
-			self.distributeInitialThumbs();
+			self.distributeInitialThumbs(recurseOut);
 		} else {
 			self.distributeBroods(recurseOut);
 		}
 	};
 	
 	
-	this.distributeInitialThumbs = function() {
+	this.distributeInitialThumbs = function(recurseOut) {
 		var brood = self.broods[0];  // Ring 0 should only have one brood.
 		for (var i = 0; i < brood.thumbs.length; i++) {
 			var thumb = brood.thumbs[i];
 			var angle = i/brood.thumbs.length * TWOPI;
 			thumb.slideTo(angle);
+		}
+		// Do it for the next ring out, too?
+		if (recurseOut && (rings.length > self.index+1)) {
+			// Do it a little bit in the future.  It looks better that way.
+			window.setTimeout(rings[self.index+1].distributeThumbs, fbaSleepBetweenRings, true);
 		}
 	};
 	
@@ -245,11 +253,28 @@ function Brood(parentThumb) {
 
 	this.addThumb = function(thumb) {
 		self.thumbs.push(thumb);
+		thumb.brood = self;
 		if (self.parentThumb != null) {
 			$(self.parentThumb.thumb).addClass("mutated");
 		}
 		self.idealSpread = self.thumbs.length * Math.asin(idealSpacing/thumb.ring.radius);
 	};
+
+	
+	this.removeThumb = function(thumb) {
+		var i = self.thumbs.indexOf(thumb);
+		self.thumbs.splice(i, 1);
+		self.idealSpread = self.thumbs.length * Math.asin(idealSpacing/thumb.ring.radius);
+	}
+	
+	
+	this.hide = function() {
+		for (var i = 0; i < self.thumbs.length; i++) {
+			self.thumbs[i].hide();
+		}
+		self.thumbs = new Array();
+		self.idealSpread = 0.0;
+	}
 
 	
 	this.contains = function(angle) {
@@ -326,10 +351,13 @@ function Thumb(ring, parentThumb) {
 	this.page_url = null;
 	this.gallery_url = null;
 	this.ring = ring;
+	this.brood = null;  // What I'm part of.
+	this.childBrood = null;  // What my children are part of.
 	this.angle = null;
 	this.smallCornerCoords = null;  // These two are for convenience, and so that
 	this.largeCornerCoords = null;  // we always know where the img should be, even while it's animating.
 	this.parentThumb = parentThumb;
+	this.hidden = false;
 
 	this.initialize = function() {
 
@@ -466,8 +494,8 @@ function Thumb(ring, parentThumb) {
 		self.on_arrive_src = "broken.jpg";
 	};
 
-
-	this.hide = function() {
+	
+	this.doHide = function() {
         var data = {"e": experimentName, "c": self.name};
         $.ajax({
             type: "GET",
@@ -477,6 +505,16 @@ function Thumb(ring, parentThumb) {
             async: true,
             error: self.onFail // Doesn't get called when we're using jsonp.
         });
+		hideThumb(self);
+	};
+	
+	
+	this.hide = function() {
+		self.hidden = true;
+		$(self.thumb).hide();
+		if (debug) {
+			self.debugText.hide();
+		}
 	};
 	
 	
@@ -530,7 +568,7 @@ function Thumb(ring, parentThumb) {
 				"Mutate!": function() { self.closeDialog(); self.mutate(); },
 				"More Info": function() { window.open(self.page_url); },
 				"Add To Gallery": function() { window.open(self.gallery_url); },
-                "Delete": function() { self.closeDialog(); self.hide(); },
+                "Delete": function() { self.closeDialog(); self.doHide(); },
 				"Close": function() { self.closeDialog(); }
 			}
 		});
@@ -670,9 +708,6 @@ function restoreThumbs(thumbInfos) {
 	var thumbsByName = {}; // { thumb_name : thumbInfo }
 	for (var i=0; i<thumbInfos.length; i++) {
 		var thumbInfo = thumbInfos[i];
-		if (thumbInfo.hidden) {
-		    continue;
-		}
 		thumbsByName[thumbInfo.name] = thumbInfo;
 	}
 
@@ -689,7 +724,10 @@ function restoreThumbs(thumbInfos) {
 		} else {
 			if (thumbInfo.parent in thumbsByName) {
 				var parentThumbInfo = thumbsByName[thumbInfo.parent];
-				if ("ringIndex" in parentThumbInfo) {
+				if (parentThumbInfo.hidden) {
+					thumbInfo.hidden = true;
+		            continue;
+				} else if ("ringIndex" in parentThumbInfo) {
 					// The parent's been placed, we can place the child now.
 					thumbInfo.ringIndex = parentThumbInfo.ringIndex + 1;
 				} else {
@@ -698,7 +736,7 @@ function restoreThumbs(thumbInfos) {
 					continue;
 				}
 			} else {
-				// Parent doesn't exist or is hidden.  Toss the child.
+				// Parent doesn't exist.  Toss the child.
 				continue;
 			}
 		}
@@ -737,6 +775,9 @@ function restoreThumbs(thumbInfos) {
 			
 			// Insert the Thumb in the Ring in the correct location.
 			var brood = ring.getBrood(parent);
+			if (parent != null) {
+				parent.childBrood = brood;
+			}
 			brood.addThumb(thumb);
 			
 			// Add the Thumb to the thumbInfo so we can access it during later rings.
@@ -773,6 +814,41 @@ function newThumbs(thumbCount, parentThumb) {
 	var ring = rings[ringIndex];
 	ring.newThumbs(thumbCount, parentThumb);
 
+}
+
+
+function hideThumb(thumb) {
+	thumb.hide();
+	thumb.brood.removeThumb(thumb);
+	if (thumb.childBrood != null) {
+		thumb.ring.distributeThumbs(false);
+		window.setTimeout(hideBroods, fbaSleepBetweenRings, [thumb.childBrood]);
+	} else {
+		thumb.ring.distributeThumbs(true);
+	}
+}
+
+
+function hideBroods(broods) {
+	var childBroods = [];
+	var ring;
+	for (var i = 0; i < broods.length; i++) {
+		var brood = broods[i];
+		for (var j = 0; j < brood.thumbs.length; j++) {
+			var thumb = brood.thumbs[j];
+			ring = thumb.ring;
+			if (thumb.childBrood != null) {
+				childBroods.push(thumb.childBrood);
+			}
+		}
+		brood.hide();
+	}
+	if (childBroods.length > 0) {
+		ring.distributeThumbs(false);
+		window.setTimeout(hideBroods, fbaSleepBetweenRings, childBroods);
+	} else {
+		ring.distributeThumbs(true);
+	}
 }
 
 
@@ -845,6 +921,9 @@ function drawCanvas() {
 				if (i > 0) {
 					for (var j = 0; j < ring.broods.length; j++) {
 						var brood = ring.broods[j];
+						if (brood.parentThumb.hidden) {
+							continue;
+						}
 						ctx.fillStyle = "rgb(200,255,200)";
 						ctx.beginPath();
 						var coords = toCenterFromThumb(brood.parentThumb);
@@ -867,6 +946,9 @@ function drawCanvas() {
 				var brood = ring.broods[j];
 				for (var k=0; k<brood.thumbs.length; k++) {
 					var thumb = brood.thumbs[k];
+					if (thumb.parentThumb.hidden) {
+						continue;
+					}
 					var startCoords = toCenterFromThumb(thumb.parentThumb);
 					ctx.moveTo(startCoords[0], startCoords[1]);
 					var endCoords = toCenterFromThumb(thumb);
