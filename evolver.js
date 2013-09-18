@@ -515,7 +515,13 @@ function Thumb(ring, parentThumb) {
 	
 	this.hide = function() {
 		self.hidden = true;
-		$(self.thumb).hide();
+		$(self.thumb).animate(
+				{
+					opacity: 0
+				}, 
+				{
+					easing : "quadEaseOut"
+				});
 		if (debug) {
 			self.debugText.hide();
 		}
