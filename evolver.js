@@ -522,7 +522,10 @@ function Thumb(ring, parentThumb) {
 					opacity: 0
 				}, 
 				{
-					easing : "quadEaseOut"
+					easing : "quadEaseOut",
+					complete: function() {
+						$(self.thumb).hide();
+					}
 				});
 		if (debug) {
 			self.debugText.hide();
