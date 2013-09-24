@@ -711,7 +711,7 @@ function initMore() {
 		top: corner[1] + "px"
 	});
 	$("#more").click(function() {
-		rings[0].newThumbs(thumbInitialCount, null);
+		rings[0].newThumbs(1, null);
 	});
 }
 
