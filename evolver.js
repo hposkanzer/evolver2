@@ -348,12 +348,15 @@ function Thumb(ring, parentThumb) {
 	var self = this; // O Javascript Joy!
 
 	this.name = null;
+	this.div = null;
 	this.img = new Image(); // The full-size image.
 	this.img.src = null;
 	this.thumb = new Image(); // The thumbnail.
 	this.thumb.src = "loading.gif"; // Initialize it with the "loading" image.
 	this.thumb.className = "qm";
 	this.on_arrive_src = "loading.gif"; // The thumb src to use when we arrive at our destination.
+	this.del = new Image();
+	this.del.src = "empty.gif";
 	this.page_url = null;
 	this.gallery_url = null;
 	this.ring = ring;
@@ -367,31 +370,17 @@ function Thumb(ring, parentThumb) {
 
 	this.initialize = function() {
 
+	    self.div = $("<div/>").addClass("tdiv");
+	    
 		// Add the hover handler.
-		$(self.thumb).hover(
+		$(self.div).hover(
 				function() {
-					$(self.thumb).css("z-index", 1);
-					$(self.thumb).animate(
-							{
-								width: thumbWidth*2, 
-								height: thumbHeight*2,
-								left: self.largeCornerCoords[0],
-								top: self.largeCornerCoords[1]
-							},{
-								easing : "quadEaseOut"
-							});
+					$(self.div).css("z-index", 1);
+			        $(self.del).show();
 				},
 				function() {
-					$(self.thumb).animate(
-							{
-								width: thumbWidth, 
-								height: thumbHeight,
-								left: self.smallCornerCoords[0],
-								top: self.smallCornerCoords[1]
-							},{
-								easing : "quadEaseOut",
-								complete : function() {$(self.thumb).css("z-index", 0);}
-							});
+			        $(self.del).hide();
+					$(self.div).css("z-index", 0);
 				}
 		);
 
@@ -400,11 +389,15 @@ function Thumb(ring, parentThumb) {
 			width: thumbWidth, 
 			height: thumbHeight
 		});
-		$("#tabletop").append(self.thumb);
+		self.div.append(self.thumb);
+        self.div.append(self.del);
+        $(self.del).addClass("delete");
+        $(self.del).hide();
 		if (debug) {
 			self.debugText = $("<div class='debugText'></div>");
-			$("#tabletop").append(self.debugText);
+			self.div.append(self.debugText);
 		}
+        $("#tabletop").append(self.div);
 
 		// Set the location.
 		if (self.parentThumb == null) {
@@ -440,7 +433,7 @@ function Thumb(ring, parentThumb) {
 	this.placeAt = function(coords) {
 		self.smallCornerCoords = toCorner(coords);
 		self.largeCornerCoords = toDoubleSizeCorner(coords);
-		$(self.thumb).css({
+		self.div.css({
 			left: self.smallCornerCoords[0] + "px",
 			top: self.smallCornerCoords[1] + "px"
 		});
@@ -454,7 +447,7 @@ function Thumb(ring, parentThumb) {
 		var center = new Array(x, y);
 		self.smallCornerCoords = toCorner(center);
 		self.largeCornerCoords = toDoubleSizeCorner(center);
-		$(self.thumb).animate({
+		self.div.animate({
 			left: self.smallCornerCoords[0] + "px",
 			top: self.smallCornerCoords[1] + "px"
 		}, {
@@ -470,10 +463,6 @@ function Thumb(ring, parentThumb) {
 		});
 		if (debug) {
 			self.debugText.html(angle.toFixed(2) + "\u00B0");
-			self.debugText.css({
-				left: self.smallCornerCoords[0] + "px",
-				top: self.smallCornerCoords[1] + "px"
-			});
 		}
 	};
 
@@ -488,10 +477,13 @@ function Thumb(ring, parentThumb) {
 		self.on_arrive_src = data.thumb_url;
 		self.page_url = data.page_url;
 		self.gallery_url = data.gallery_url;
+		self.del.src = "delete.gif";
 		// Add the mutation handler.
 		$(self.thumb).click(self.openDialog);
 		// Change the class.
 		$(self.thumb).removeClass("qm").addClass("thumb");
+		// Add the delete handler.
+		$(self.del).click(self.doHide);
 	};
 
 
@@ -527,6 +519,7 @@ function Thumb(ring, parentThumb) {
 						$(self.thumb).hide();
 					}
 				});
+        $(self.del).hide();
 		if (debug) {
 			self.debugText.hide();
 		}
@@ -1064,9 +1057,9 @@ function toDoubleSizeCenter(corner) {
 
 //Convenience.
 function toCenterFromThumb(thumb) {
-	return toCenter(new Array(thumb.thumb.offsetLeft, thumb.thumb.offsetTop));
+	return toCenter(new Array(thumb.div[0].offsetLeft, thumb.div[0].offsetTop));
 }
 
 function toCenterFromDoubleSizeThumb(thumb) {
-	return toDoubleSizeCenter(new Array(thumb.thumb.offsetLeft, thumb.thumb.offsetTop));
+	return toDoubleSizeCenter(new Array(thumb.div[0].offsetLeft, thumb.div[0].offsetTop));
 }

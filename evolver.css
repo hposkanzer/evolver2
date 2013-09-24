@@ -37,9 +37,20 @@
 	cursor: hand;
 }
 
+.tdiv {
+	position: absolute;
+	cursor: hand;
+}
+
 .mutated {
 	/* border: 1px rgb(255, 127, 0) solid; */
 }	
+
+.delete {
+	position: absolute;
+	cursor: hand;
+	z-index: 2;
+}
 
 #zoomer {
 	position: absolute;
