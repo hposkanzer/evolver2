@@ -322,8 +322,8 @@ class Shift(_xformer._MonoTransformer):
     def tweakInner(self):
         max_x = self.getDims()[0] * self.max_tweak / 2
         max_y = self.getDims()[1] * self.max_tweak / 2
-        self.args["xshift"] = random.randint(self.args["xshift"] - max_x, self.args["xshift"] + max_x)
-        self.args["yshift"] = random.randint(self.args["yshift"] - max_y, self.args["yshift"] + max_y)
+        self.args["xshift"] = random.randint(self.args["xshift"] - max_x, self.args["xshift"] + max_x) % self.getDims()[0]
+        self.args["yshift"] = random.randint(self.args["yshift"] - max_y, self.args["yshift"] + max_y) % self.getDims()[1]
 
     def getExamplesInner(self, imgs):
         exs = []
