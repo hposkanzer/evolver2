@@ -297,6 +297,44 @@ class Zoom(_xformer._MonoTransformer):
 
 
 #############################################################################
+class Shift(_xformer._MonoTransformer):
+    
+    max_tweak = 0.3
+    
+    def __init__(self):
+        _xformer._MonoTransformer.__init__(self)
+        self.args["xshift"] = 0
+        self.args["yshift"] = 0
+
+    # We have to set our params here instead of __init__
+    # so we can know the size of the input image.    
+    def addInput(self, xform):
+        _xformer._MonoTransformer.addInput(self, xform)
+        self.args["xshift"] = random.randint(0, self.getDims()[0])
+        self.args["yshift"] = random.randint(0, self.getDims()[1])
+
+    def getArgsString(self):
+        return "(%s, %s)" % (self.args["xshift"], self.args["yshift"])
+
+    def transformImage(self, img):
+        return ImageChops.offset(img, self.args["xshift"], self.args["yshift"])
+
+    def tweakInner(self):
+        max_x = self.getDims()[0] * self.max_tweak / 2
+        max_y = self.getDims()[1] * self.max_tweak / 2
+        self.args["xshift"] = random.randint(self.args["xshift"] - max_x, self.args["xshift"] + max_x)
+        self.args["yshift"] = random.randint(self.args["yshift"] - max_y, self.args["yshift"] + max_y)
+
+    def getExamplesInner(self, imgs):
+        exs = []
+        self.args["xshift"] = self.getDims()[0] / 3
+        self.args["yshift"] = self.getDims()[1] / 3
+        print "%s..." % (self)
+        exs.append(self.getExampleImage(imgs))
+        return exs
+
+
+#############################################################################
 class Mirror(_xformer._MonoTransformer):
     
     portions = [
