@@ -359,6 +359,10 @@ class Creature(Picklable.Picklable):
     def getRandomSrcImage(self):
         xform = self.experiment.getNonTransformer()
         xform.addInput(self.experiment.getRandomSrcImage())
+        if (self.experiment.config["tile_mode"]):
+            shift = self.experiment.getShiftTransformer()
+            shift.addInput(xform)
+            xform = shift
         return xform
 
 

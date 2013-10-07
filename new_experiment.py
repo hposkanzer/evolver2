@@ -15,8 +15,9 @@ import Experiment
 def usage( msg=None ):
     if msg:
         sys.stderr.write( "ERROR:  %s\n" % (msg) )
-    sys.stderr.write( "Usage:  %s [--debug] [--local-only] [--no-op] [name]\n" % (os.path.basename(sys.argv[0])) )
+    sys.stderr.write( "Usage:  %s [--debug] [--local-only] [--tile-mode] [--no-op] [name]\n" % (os.path.basename(sys.argv[0])) )
     sys.stderr.write( "  local-only:  Keep thumbnails on the local disk, instead of S3.\n")
+    sys.stderr.write( "  tile-mode:  Always apply a Shift filter first.\n")
     sys.stderr.write( "  no-op:  Do not generate creatures or preserve state.\n")
     sys.stderr.write( "  name:  Create this experiment name.  If not provided, a name is generated.\n")
     sys.exit(-1)
@@ -60,7 +61,7 @@ def main():
 def newExperiment(odict, name=None):
     
     exp = Experiment.Experiment(name)
-    exp.initialize(odict.get("local-only", False), odict.get("no-op", False), odict.get("debug", False))
+    exp.initialize(odict.get("local-only", False), odict.get("no-op", False), odict.get("debug", False), odict.get("tile-mode", False))
     
     return exp.getURL()
 
@@ -74,6 +75,11 @@ def getCGIOptions():
         odict["local-only"] = True
     else:
         odict["local-only"] = False
+    
+    if int(odict.get("tile-mode", [0])[0]):
+        odict["tile-mode"] = True
+    else:
+        odict["tile-mode"] = False
     
     if int(odict.get("no-op", [0])[0]):
         odict["no-op"] = True
@@ -91,7 +97,7 @@ def getCGIOptions():
 def getOptions():
     
     try:
-        (tt, args) = getopt.getopt( sys.argv[1:], "h", ["help", "debug", "local-only", "no-op"] )
+        (tt, args) = getopt.getopt( sys.argv[1:], "h", ["help", "debug", "local-only", "tile-mode", "no-op"] )
     except getopt.error:
         usage( str(sys.exc_info()[1]) )
 
@@ -109,6 +115,9 @@ def getOptions():
         
     if odict.has_key("local-only"):
         odict["local-only"] = True
+        
+    if odict.has_key("tile-mode"):
+        odict["tile-mode"] = True
         
     if odict.has_key("no-op"):
         odict["no-op"] = True

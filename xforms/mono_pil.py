@@ -299,6 +299,7 @@ class Zoom(_xformer._MonoTransformer):
 #############################################################################
 class Shift(_xformer._MonoTransformer):
     
+    is_shift_transformer = 1
     max_tweak = 0.3
     
     def __init__(self):

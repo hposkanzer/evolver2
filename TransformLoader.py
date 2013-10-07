@@ -17,6 +17,7 @@ class TransformLoader(Picklable.Picklable):
         Picklable.Picklable.__init__(self)
         self.classes = []
         self.non_transformer = None
+        self.shift_transformer = None
 
 
     def getTransforms(self):
@@ -24,6 +25,9 @@ class TransformLoader(Picklable.Picklable):
     
     def getNonTransformer(self):
         return self.non_transformer
+    
+    def getShiftTransformer(self):
+        return self.shift_transformer
     
     
     # Import all .py files in the given directory and return all classes found therein.
@@ -76,6 +80,10 @@ class TransformLoader(Picklable.Picklable):
                 self.non_transformer = obj
                 self.logger.debug("Found NonTransformer:  %s" % (obj))
                 continue
+                
+            if (hasattr(obj, "is_shift_transformer") and obj.is_shift_transformer):
+                self.shift_transformer = obj
+                self.logger.debug("Found Shift transformer:  %s" % (obj))
                 
             if (obj.__name__[0] == "_"):
                 continue
