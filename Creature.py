@@ -203,7 +203,7 @@ class Creature(Picklable.Picklable):
     
     # Returns a list of (parent, child) pairs of transformers.
     # Parent will be None if Child is the head transformer.
-    # NonTransformers are not included.
+    # NonTransformers and TileTransformers are not included.
     def getTransformerPairs(self):
         return self.head.getPairs()
         
@@ -357,13 +357,13 @@ class Creature(Picklable.Picklable):
     
     
     def getRandomSrcImage(self):
-        xform = self.experiment.getNonTransformer()
-        xform.addInput(self.experiment.getRandomSrcImage())
+        src = self.experiment.getNonTransformer()
+        src.addInput(self.experiment.getRandomSrcImage())
         if (self.experiment.config["tile_mode"]):
-            shift = self.experiment.getShiftTransformer()
-            shift.addInput(xform)
-            xform = shift
-        return xform
+            tile = self.experiment.getTileTransformer()
+            tile.addInput(src)
+            src = tile
+        return src
 
 
     #################################################################

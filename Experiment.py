@@ -95,7 +95,7 @@ class Experiment(Picklable.Picklable):
         self.srcimgs = []
         self.xforms = []
         self.non_transformer = None
-        self.shift_transformer = None
+        self.tile_transformer = None
         self.tn = None
         
 
@@ -235,7 +235,7 @@ class Experiment(Picklable.Picklable):
         self.xforms = xl.getTransforms()
         self.xforms.sort(lambda a, b: cmp(a.__name__, b.__name__))
         self.non_transformer = xl.getNonTransformer()
-        self.shift_transformer = xl.getShiftTransformer()
+        self.tile_transformer = xl.getTileTransformer()
         
         
     ##############################################################
@@ -277,8 +277,8 @@ class Experiment(Picklable.Picklable):
         xform = self.non_transformer()
         return xform
     
-    def getShiftTransformer(self):
-        xform = self.shift_transformer()
+    def getTileTransformer(self):
+        xform = self.tile_transformer()
         return xform
     
     def getCreaturesDir(self, abs=True):
