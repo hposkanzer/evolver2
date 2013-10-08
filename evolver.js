@@ -5,6 +5,8 @@ Number.prototype.mod = function(n) {
 
 //Experiment stuff
 var experimentName = null;
+var creatureWidth = 800;
+var creatureHeight = 600;
 
 //Canvas stuff
 var tabletop = null;
@@ -39,6 +41,7 @@ var thumbHeight = 54; // +2 to include the border
 
 //Dialog stuff
 var zoomerInitialOpacity = 0.7;
+var tileMode = false;
 
 //FBA stuff
 var spreadSpringConstant = 0.2;
@@ -377,10 +380,12 @@ function Thumb(ring, parentThumb) {
 				function() {
 					$(self.div).css("z-index", 1);
 			        $(self.del).show();
+			        if (tileMode) $("#canvas").css({"background-image": "url(" + self.img.src + ")"});
 				},
 				function() {
 			        $(self.del).hide();
 					$(self.div).css("z-index", 0);
+                    if (tileMode) $("#canvas").css({"background-image": "none"});
 				}
 		);
 
@@ -586,6 +591,9 @@ function Thumb(ring, parentThumb) {
 
 		// Hide the zoomer.
 		$("#zoomer").css({display: "none"});
+		
+		// Unset the background.
+        if (tileMode) $("#canvas").css({"background-image": "none"});
 
 	};
 
@@ -693,8 +701,11 @@ function initConfig(data) {
 	}
 
 	experimentName = data.name;
+	creatureWidth = data.img_width;
+	creatureHeight = data.img_height
 	thumbInitialCount = data.start;
 	thumbCountIncrement = data.progeny;
+	tileMode = data.tile_mode;
 	debug = data.debug;
 
 }

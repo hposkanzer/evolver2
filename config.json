@@ -11,5 +11,6 @@
   "img_height": 600, 
   "debug": false, 
   "index_columns": 5, 
-  "mutation_rate": 0.8
+  "mutation_rate": 0.8,
+  "tile_mode": false
 }
