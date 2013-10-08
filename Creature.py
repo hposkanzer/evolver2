@@ -307,9 +307,13 @@ class Creature(Picklable.Picklable):
             # Thumbnails come from the local creatures dir.
             fpath = self.experiment.getCreaturesDir() + "/" + xform.getThumbName()
             src = self.experiment.tn.getURL(fpath)
-            # Link to the local copy of the filter example.
-            href = "../%s/index.html#%s" % (self.experiment.examples_dir, name)
-            tdData = "<img class='thumb' src='%s'><br><a href='%s'>%s</a>%s" % (src, href, name, xform.getArgsString())
+            if xform.is_reserved_transformer:
+                # No link.
+                tdData = "<img class='thumb' src='%s'><br>%s%s" % (src, name, xform.getArgsString())
+            else:
+                # Link to the local copy of the filter example.
+                href = "../%s/index.html#%s" % (self.experiment.examples_dir, name)
+                tdData = "<img class='thumb' src='%s'><br><a href='%s'>%s</a>%s" % (src, href, name, xform.getArgsString())
             tdClass = "genomeCell"
             if (len(xform.inputs) > 1):
                 # Add a line across the bottom.

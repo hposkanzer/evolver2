@@ -22,6 +22,7 @@ cachingEnabled = False
 class _Transformer(Picklable.Picklable):
     
     is_non_transformer = 0
+    is_reserved_transformer = 0
     
     def __init__(self):
         Picklable.Picklable.__init__(self)

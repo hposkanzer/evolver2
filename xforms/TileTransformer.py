@@ -10,6 +10,7 @@ import mono_pil
 class TileTransformer(mono_pil.Shift):
 
     is_tile_transformer = 1
+    is_reserved_transformer = 1
 
     def getPairs(self, prev=None):
         return []
