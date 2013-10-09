@@ -81,6 +81,10 @@ class Creature(Picklable.Picklable):
     def conceive(self, depth):
         self.logger.debug("Conceiving %s..." % (self))
         self.head = self.makeGenome(depth)
+        if (self.experiment.config["reflect_mode"]):
+            reflect = self.experiment.getReflectTransformer()
+            reflect.addInput(self.head)
+            self.head = reflect
         
         
     #################################################################
@@ -203,7 +207,7 @@ class Creature(Picklable.Picklable):
     
     # Returns a list of (parent, child) pairs of transformers.
     # Parent will be None if Child is the head transformer.
-    # NonTransformers and TileTransformers are not included.
+    # NonTransformers, TileTransformers, and ReflectTransformers are not included.
     def getTransformerPairs(self):
         return self.head.getPairs()
         

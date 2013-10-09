@@ -18,6 +18,7 @@ class TransformLoader(Picklable.Picklable):
         self.classes = []
         self.non_transformer = None
         self.tile_transformer = None
+        self.reflect_transformer = None
 
 
     def getTransforms(self):
@@ -29,6 +30,9 @@ class TransformLoader(Picklable.Picklable):
     def getTileTransformer(self):
         return self.tile_transformer
     
+    def getReflectTransformer(self):
+        return self.reflect_transformer
+
     
     # Import all .py files in the given directory and return all classes found therein.
     # Files and classes starting with "_" are skipped.
@@ -84,6 +88,11 @@ class TransformLoader(Picklable.Picklable):
             if (hasattr(obj, "is_tile_transformer") and obj.is_tile_transformer):
                 self.tile_transformer = obj
                 self.logger.debug("Found TileTransformer:  %s" % (obj))
+                continue
+                
+            if (hasattr(obj, "is_reflect_transformer") and obj.is_reflect_transformer):
+                self.reflect_transformer = obj
+                self.logger.debug("Found ReflectTransformer:  %s" % (obj))
                 continue
                 
             if (obj.__name__[0] == "_"):

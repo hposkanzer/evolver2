@@ -42,6 +42,7 @@ var thumbHeight = 54; // +2 to include the border
 //Dialog stuff
 var zoomerInitialOpacity = 0.7;
 var tileMode = false;
+var reflectMode = false;
 
 //FBA stuff
 var spreadSpringConstant = 0.2;
@@ -380,12 +381,12 @@ function Thumb(ring, parentThumb) {
 				function() {
 					$(self.div).css("z-index", 1);
 			        $(self.del).show();
-			        if (tileMode) $("#canvas").css({"background-image": "url(" + self.img.src + ")"});
+			        if (tileMode || reflectMode) $("#canvas").css({"background-image": "url(" + self.img.src + ")"});
 				},
 				function() {
 			        $(self.del).hide();
 					$(self.div).css("z-index", 0);
-                    if (tileMode) $("#canvas").css({"background-image": "none"});
+                    if (tileMode || reflectMode) $("#canvas").css({"background-image": "none"});
 				}
 		);
 
@@ -593,7 +594,7 @@ function Thumb(ring, parentThumb) {
 		$("#zoomer").css({display: "none"});
 		
 		// Unset the background.
-        if (tileMode) $("#canvas").css({"background-image": "none"});
+        if (tileMode || reflectMode) $("#canvas").css({"background-image": "none"});
 
 	};
 
@@ -706,6 +707,7 @@ function initConfig(data) {
 	thumbInitialCount = data.start;
 	thumbCountIncrement = data.progeny;
 	tileMode = data.tile_mode;
+	reflectMode = data.reflect_mode;
 	debug = data.debug;
 
 }

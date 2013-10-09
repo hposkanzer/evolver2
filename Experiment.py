@@ -96,11 +96,12 @@ class Experiment(Picklable.Picklable):
         self.xforms = []
         self.non_transformer = None
         self.tile_transformer = None
+        self.reflect_transformer = None
         self.tn = None
         
 
     ##############################################################
-    def initialize(self, local_only=False, no_op=False, debug=False, tile_mode=False):
+    def initialize(self, local_only=False, no_op=False, debug=False, tile_mode=False, reflect_mode=False):
         
         t0 = time.time()
         self.logger.info("Initializing %s..." % (self))
@@ -121,7 +122,7 @@ class Experiment(Picklable.Picklable):
         # Create the directory for all the creatures.
         os.mkdir(self.getCreaturesDir())
         # Generate the initial conf file.
-        self.initConfig(local_only, no_op, debug, tile_mode)
+        self.initConfig(local_only, no_op, debug, tile_mode, reflect_mode)
         
         t1 = time.time()
         self.logger.debug("%s complete in %.2f seconds." % (self, t1-t0))
@@ -236,6 +237,7 @@ class Experiment(Picklable.Picklable):
         self.xforms.sort(lambda a, b: cmp(a.__name__, b.__name__))
         self.non_transformer = xl.getNonTransformer()
         self.tile_transformer = xl.getTileTransformer()
+        self.reflect_transformer = xl.getReflectTransformer()
         
         
     ##############################################################
@@ -281,6 +283,10 @@ class Experiment(Picklable.Picklable):
         xform = self.tile_transformer()
         return xform
     
+    def getReflectTransformer(self):
+        xform = self.reflect_transformer()
+        return xform
+    
     def getCreaturesDir(self, abs=True):
         if abs:
             return os.path.join(self.dir, self.creatures_dir)
@@ -299,7 +305,7 @@ class Experiment(Picklable.Picklable):
     
     
     ##############################################################
-    def initConfig(self, local_only=False, no_op=False, debug=False, tile_mode=False):
+    def initConfig(self, local_only=False, no_op=False, debug=False, tile_mode=False, reflect_mode=False):
         # For now, we'll copy the default values.
         src = self.loc.toAbsolutePath(self.conf_file)
         dst = os.path.join(self.dir, self.conf_file)
@@ -312,6 +318,7 @@ class Experiment(Picklable.Picklable):
         self.config["no_op"] = no_op
         self.config["debug"] = debug
         self.config["tile_mode"] = tile_mode
+        self.config["reflect_mode"] = reflect_mode
         # Write the config back to disk.
         self.saveConfig()
         
