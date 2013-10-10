@@ -381,12 +381,18 @@ function Thumb(ring, parentThumb) {
 				function() {
 					$(self.div).css("z-index", 1);
 			        $(self.del).show();
-			        if (tileMode || reflectMode) $("#canvas").css({"background-image": "url(" + self.img.src + ")"});
+			        $("#canvas").css({"background-image": "url(" + self.img.src + ")"});
+			        if (!tileMode && !reflectMode) {
+	                    $("#canvas").css({
+	                        "background-repeat": "no-repeat",
+	                        "background-position": "center center"
+	                    });
+			        }
 				},
 				function() {
 			        $(self.del).hide();
 					$(self.div).css("z-index", 0);
-                    if (tileMode || reflectMode) $("#canvas").css({"background-image": "none"});
+                    $("#canvas").css({"background-image": "none"});
 				}
 		);
 
@@ -539,6 +545,9 @@ function Thumb(ring, parentThumb) {
 
 	this.openDialog = function() {
 
+	    // Unset the background.
+        $("#canvas").css({"background-image": "none"});
+
 		// Show & zoom the zoomer.  We start it off at the same location & size as the thumb,
 		// then animate it to where we think the dialog will display it.
 		$("#zoomer").attr("src", self.img.src);
@@ -564,7 +573,7 @@ function Thumb(ring, parentThumb) {
 					easing : "quadEaseOut",
 					complete : function() {self.openDialog2();}
 				});
-
+	    
 	};
 
 	this.openDialog2 = function() {
@@ -593,9 +602,6 @@ function Thumb(ring, parentThumb) {
 		// Hide the zoomer.
 		$("#zoomer").css({display: "none"});
 		
-		// Unset the background.
-        if (tileMode || reflectMode) $("#canvas").css({"background-image": "none"});
-
 	};
 
 
