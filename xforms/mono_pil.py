@@ -335,6 +335,56 @@ class Shift(_xformer._MonoTransformer):
 
 
 #############################################################################
+class Reflect(_xformer._MonoTransformer):
+    
+    def __init__(self):
+        _xformer._MonoTransformer.__init__(self)
+        self.args["box"] = []
+
+    # We have to set our params here instead of __init__
+    # so we can know the size of the input image.    
+    def addInput(self, xform):
+        _xformer._MonoTransformer.addInput(self, xform)
+        self.args["box"] = self.getBox()
+
+    def getArgsString(self):
+        return str(tuple(self.args["box"]))
+
+    def transformImage(self, img):
+        ret = img.copy()
+        dims = self.getDims()
+        small = img.crop(tuple(self.args["box"]))
+        ret.paste(small, (0, 0))  # In-place edit!
+        small = small.transpose(Image.FLIP_LEFT_RIGHT)
+        ret.paste(small, (dims[0]/2, 0))  # In-place edit!
+        small = small.transpose(Image.FLIP_TOP_BOTTOM)
+        ret.paste(small, (dims[0]/2, dims[1]/2))  # In-place edit!
+        small = small.transpose(Image.FLIP_LEFT_RIGHT)
+        ret.paste(small, (0, dims[1]/2))  # In-place edit!
+        return ret
+    
+    def tweakInner(self):
+        self.args["box"] = self.getBox()
+
+    def getBox(self):
+        dims = self.getDims()
+        box = [0] * 4
+        box[0] = random.randint(0, dims[0]/2)
+        box[1] = random.randint(0, dims[1]/2)
+        box[2] = box[0] + dims[0]/2
+        box[3] = box[1] + dims[1]/2
+        return box
+
+    def getExamplesInner(self, imgs):
+        exs = []
+        for i in range(1):
+            self.tweakInner()
+            print "%s..." % (self)
+            exs.append(self.getExampleImage(imgs))
+        return exs
+
+
+#############################################################################
 class Mirror(_xformer._MonoTransformer):
     
     portions = [
