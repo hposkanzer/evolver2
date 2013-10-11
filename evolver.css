@@ -40,6 +40,8 @@
 .tdiv {
 	position: absolute;
 	cursor: hand;
+	width: 72px;
+	height: 54px;
 }
 
 .mutated {
@@ -48,6 +50,7 @@
 
 .delete {
 	position: absolute;
+	right: -2px;
 	cursor: hand;
 	z-index: 2;
 }
