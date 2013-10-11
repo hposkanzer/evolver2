@@ -361,6 +361,8 @@ function Thumb(ring, parentThumb) {
 	this.on_arrive_src = "loading.gif"; // The thumb src to use when we arrive at our destination.
 	this.del = new Image();
 	this.del.src = "empty.gif";
+    this.mutate_img = new Image();
+    this.mutate_img.src = "empty.gif";
 	this.page_url = null;
 	this.gallery_url = null;
 	this.ring = ring;
@@ -381,6 +383,7 @@ function Thumb(ring, parentThumb) {
 				function() {
 					$(self.div).css("z-index", 1);
 			        $(self.del).show();
+                    $(self.mutate_img).show();
 			        $("#canvas").css({"background-image": "url(" + self.img.src + ")"});
 			        if (!tileMode && !reflectMode) {
 	                    $("#canvas").css({
@@ -391,6 +394,7 @@ function Thumb(ring, parentThumb) {
 				},
 				function() {
 			        $(self.del).hide();
+                    $(self.mutate_img).hide();
 					$(self.div).css("z-index", 0);
                     $("#canvas").css({"background-image": "none"});
 				}
@@ -405,6 +409,9 @@ function Thumb(ring, parentThumb) {
         self.div.append(self.del);
         $(self.del).addClass("delete");
         $(self.del).hide();
+        self.div.append(self.mutate_img);
+        $(self.mutate_img).addClass("mutate");
+        $(self.mutate_img).hide();
 		if (debug) {
 			self.debugText = $("<div class='debugText'></div>");
 			self.div.append(self.debugText);
@@ -490,12 +497,15 @@ function Thumb(ring, parentThumb) {
 		self.page_url = data.page_url;
 		self.gallery_url = data.gallery_url;
 		self.del.src = "delete.gif";
-		// Add the mutation handler.
+        self.mutate_img.src = "mutate.jpg";
+		// Add the dialog handler.
 		$(self.thumb).click(self.openDialog);
 		// Change the class.
 		$(self.thumb).removeClass("qm").addClass("thumb");
 		// Add the delete handler.
 		$(self.del).click(self.doHide);
+        // Add the mutation handler.
+        $(self.mutate_img).click(self.mutate);
 	};
 
 
@@ -532,6 +542,7 @@ function Thumb(ring, parentThumb) {
 					}
 				});
         $(self.del).hide();
+        $(self.mutate_img).hide();
 		if (debug) {
 			self.debugText.hide();
 		}

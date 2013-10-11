@@ -55,6 +55,16 @@
 	z-index: 2;
 }
 
+.mutate {
+	position: absolute;
+	width: 14px;
+	height: 14px;
+	left: 1px;
+	top: 1px;
+	cursor: hand;
+	z-index: 2;
+}
+
 #zoomer {
 	position: absolute;
 	display: none;
