@@ -386,9 +386,11 @@ function Thumb(ring, parentThumb) {
                     $(self.mutate_img).show();
 			        $("#canvas").css({"background-image": "url(" + self.img.src + ")"});
 			        if (!tileMode && !reflectMode) {
+			            var x = $("#frame").scrollLeft() + ($("#frame").width() - creatureWidth)/2;
+                        var y = $("#frame").scrollTop() + ($("#frame").height() - creatureHeight)/2;
 	                    $("#canvas").css({
 	                        "background-repeat": "no-repeat",
-	                        "background-position": "center center"
+	                        "background-position": x + "px " + y + "px"
 	                    });
 			        }
 				},
