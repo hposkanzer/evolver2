@@ -538,13 +538,13 @@ function Thumb(ring, parentThumb) {
 				{
 					easing : "quadEaseOut",
 					complete: function() {
-						$(self.thumb).hide();
+						$(self.div).remove();
 					}
 				});
-        $(self.del).hide();
-        $(self.mutate_img).hide();
+        $(self.del).remove();
+        $(self.mutate_img).remove();
 		if (debug) {
-			self.debugText.hide();
+			self.debugText.remove();
 		}
 	};
 	
