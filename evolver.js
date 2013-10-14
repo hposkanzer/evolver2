@@ -563,29 +563,31 @@ function Thumb(ring, parentThumb) {
 
 		// Show & zoom the zoomer.  We start it off at the same location & size as the thumb,
 		// then animate it to where we think the dialog will display it.
-		$("#zoomer").attr("src", self.img.src);
+//		$("#zoomer").attr("src", self.img.src);
 		$("#creature").attr("src", self.img.src);  // The dialog seems to work better if we set this up here.
-		$("#zoomer").css(
-				{
-					display: "block", 
-					width: self.thumb.width, 
-					height: self.thumb.height,
-					opacity: zoomerInitialOpacity
-				});
-		$("#zoomer").offset($(self.thumb).offset());
-		$("#zoomer").animate(
-				{
-					// Dialog position is always relative to the window, not the container.
-					top: window.innerHeight/2 - self.img.height/2 - 20, // Bump up to account for dialog buttons.
-					left: window.innerWidth/2 - self.img.width/2, 
-					width: self.img.width, 
-					height: self.img.height,
-					opacity: 1
-				}, 
-				{
-					easing : "quadEaseOut",
-					complete : function() {self.openDialog2();}
-				});
+//		$("#zoomer").css(
+//				{
+//					display: "block", 
+//					width: self.thumb.width, 
+//					height: self.thumb.height,
+//					opacity: zoomerInitialOpacity
+//				});
+//		$("#zoomer").offset($(self.thumb).offset());
+//		$("#zoomer").animate(
+//				{
+//					// Dialog position is always relative to the window, not the container.
+//					top: window.innerHeight/2 - self.img.height/2 - 20, // Bump up to account for dialog buttons.
+//					left: window.innerWidth/2 - self.img.width/2, 
+//					width: self.img.width, 
+//					height: self.img.height,
+//					opacity: 1
+//				}, 
+//				{
+//					easing : "quadEaseOut",
+//					complete : function() {self.openDialog2();}
+//				});
+		
+		self.openDialog2();
 	    
 	};
 
@@ -621,31 +623,33 @@ function Thumb(ring, parentThumb) {
 	this.closeDialog = function() {
 
 		// Place & show the zoomer.  We start at the current location of the creature.
-		$("#zoomer").css(
-				{
-					display: "block",
-					top: $("#creature").offset().top,
-					left: $("#creature").offset().left
-				}
-		);
+//		$("#zoomer").css(
+//				{
+//					display: "block",
+//					top: $("#creature").offset().top,
+//					left: $("#creature").offset().left
+//				}
+//		);
 
 		// Close the dialog.
 		$("#dialog").dialog("close");
 
 		// Un-zoom the zoomer.  We zoom to the location and size of the thumbnail.
-		$("#zoomer").animate(
-				{
-					top: $(self.thumb).offset().top+1, // +1 to account for the border
-					left: $(self.thumb).offset().left+1, // +1 to account for the border 
-					width: self.thumb.width, 
-					height: self.thumb.height,
-					opacity: zoomerInitialOpacity
-				}, 
-				{
-					easing : "quadEaseOut",
-					duration : "slow",
-					complete : function() {self.closeDialog2();}
-				});
+//		$("#zoomer").animate(
+//				{
+//					top: $(self.thumb).offset().top+1, // +1 to account for the border
+//					left: $(self.thumb).offset().left+1, // +1 to account for the border 
+//					width: self.thumb.width, 
+//					height: self.thumb.height,
+//					opacity: zoomerInitialOpacity
+//				}, 
+//				{
+//					easing : "quadEaseOut",
+//					duration : "slow",
+//					complete : function() {self.closeDialog2();}
+//				});
+		
+		self.closeDialog2();
 
 	};
 
