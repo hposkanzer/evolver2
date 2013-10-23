@@ -5,6 +5,8 @@
 .settings
 .pydevproject
 /examples/
-/exps/
+/exps/*
+!/exps/grid/
+/exps/grid/creatures/
 /gallery/
 /logs/

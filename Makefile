@@ -7,7 +7,8 @@ clean_examples:
 	find examples \( -name '*.html' -o -name '*.jpg' \) | xargs rm
 	
 clean_exps:
-	find exps -type d -maxdepth 1 -mindepth 1 | grep -v .svn | xargs rm -r
+	find exps -type d -maxdepth 1 -mindepth 1 | grep -v exps/grid | xargs rm -r
+	rm exps/grid/creatures/*
 	
 clean_gallery:
 	rm gallery/*
