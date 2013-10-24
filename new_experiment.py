@@ -15,10 +15,11 @@ import Experiment
 def usage( msg=None ):
     if msg:
         sys.stderr.write( "ERROR:  %s\n" % (msg) )
-    sys.stderr.write( "Usage:  %s [--debug] [--local-only] [--tile-mode] [--reflect-mode] [--no-op] [name]\n" % (os.path.basename(sys.argv[0])) )
+    sys.stderr.write( "Usage:  %s [--debug] [--local-only] [--tile-mode] [--reflect-mode] [--grid-mode] [--no-op] [name]\n" % (os.path.basename(sys.argv[0])) )
     sys.stderr.write( "  local-only:  Keep thumbnails on the local disk, instead of S3.\n")
     sys.stderr.write( "  tile-mode:  Always apply a TileTransformer first.\n")
     sys.stderr.write( "  reflect-mode:  Always apply a ReflectTransformer last.\n")
+    sys.stderr.write( "  grid-mode:  Produce lots of immutable creatures.\n")
     sys.stderr.write( "  no-op:  Do not generate creatures or preserve state.\n")
     sys.stderr.write( "  name:  Create this experiment name.  If not provided, a name is generated.\n")
     sys.exit(-1)
@@ -62,7 +63,12 @@ def main():
 def newExperiment(odict, name=None):
     
     exp = Experiment.Experiment(name)
-    exp.initialize(odict.get("local-only", False), odict.get("no-op", False), odict.get("debug", False), odict.get("tile-mode", False), odict.get("reflect-mode", False))
+    exp.initialize(odict.get("local-only", False), 
+                   odict.get("no-op", False), 
+                   odict.get("debug", False), 
+                   odict.get("tile-mode", False), 
+                   odict.get("reflect-mode", False), 
+                   odict.get("grid-mode", False))
     
     return exp.getURL()
 
@@ -87,6 +93,11 @@ def getCGIOptions():
     else:
         odict["reflect-mode"] = False
     
+    if int(odict.get("grid-mode", [0])[0]):
+        odict["grid-mode"] = True
+    else:
+        odict["grid-mode"] = False
+    
     if int(odict.get("no-op", [0])[0]):
         odict["no-op"] = True
     else:
@@ -103,7 +114,7 @@ def getCGIOptions():
 def getOptions():
     
     try:
-        (tt, args) = getopt.getopt( sys.argv[1:], "h", ["help", "debug", "local-only", "tile-mode", "reflect-mode", "no-op"] )
+        (tt, args) = getopt.getopt( sys.argv[1:], "h", ["help", "debug", "local-only", "tile-mode", "reflect-mode", "grid-mode", "no-op"] )
     except getopt.error:
         usage( str(sys.exc_info()[1]) )
 
@@ -127,6 +138,9 @@ def getOptions():
         
     if odict.has_key("reflect-mode"):
         odict["reflect-mode"] = True
+        
+    if odict.has_key("grid-mode"):
+        odict["grid-mode"] = True
         
     if odict.has_key("no-op"):
         odict["no-op"] = True

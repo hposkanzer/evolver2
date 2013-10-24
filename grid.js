@@ -4,7 +4,7 @@ Number.prototype.mod = function(n) {
 };
 
 //Experiment stuff
-var experimentName = "grid";
+var experimentName = null;
 var creatureWidth = 800;
 var creatureHeight = 600;
 var thumbWidth = 152; // +2 to include the border
@@ -134,6 +134,7 @@ function initConfig(data) {
 		return;
 	}
 
+    experimentName = data.name;
 	creatureWidth = data.img_width;
 	creatureHeight = data.img_height
 	debug = data.debug;

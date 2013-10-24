@@ -102,14 +102,17 @@ class Experiment(Picklable.Picklable):
         
 
     ##############################################################
-    def initialize(self, local_only=False, no_op=False, debug=False, tile_mode=False, reflect_mode=False):
+    def initialize(self, local_only=False, no_op=False, debug=False, tile_mode=False, reflect_mode=False, grid_mode=False):
         
         t0 = time.time()
         self.logger.info("Initializing %s..." % (self))
         os.mkdir(self.dir)
         
         # Grab the common stuff from the top dir.
-        self.linkOrCopy(os.path.join(self.loc.base_dir, "evolver.html"), os.path.join(self.dir, "index.html"))
+        if (grid_mode):
+            self.linkOrCopy(os.path.join(self.loc.base_dir, "grid.html"), os.path.join(self.dir, "index.html"))
+        else:
+            self.linkOrCopy(os.path.join(self.loc.base_dir, "evolver.html"), os.path.join(self.dir, "index.html"))
         self.copyFromBase(self.question_mark)
         self.copyFromBase(self.loading)
         self.copyFromBase(self.broken)
@@ -124,7 +127,7 @@ class Experiment(Picklable.Picklable):
         # Create the directory for all the creatures.
         os.mkdir(self.getCreaturesDir())
         # Generate the initial conf file.
-        self.initConfig(local_only, no_op, debug, tile_mode, reflect_mode)
+        self.initConfig(local_only, no_op, debug, tile_mode, reflect_mode, grid_mode)
         
         t1 = time.time()
         self.logger.debug("%s complete in %.2f seconds." % (self, t1-t0))
@@ -307,7 +310,7 @@ class Experiment(Picklable.Picklable):
     
     
     ##############################################################
-    def initConfig(self, local_only=False, no_op=False, debug=False, tile_mode=False, reflect_mode=False):
+    def initConfig(self, local_only=False, no_op=False, debug=False, tile_mode=False, reflect_mode=False, grid_mode=False):
         # For now, we'll copy the default values.
         src = self.loc.toAbsolutePath(self.conf_file)
         dst = os.path.join(self.dir, self.conf_file)
@@ -321,6 +324,7 @@ class Experiment(Picklable.Picklable):
         self.config["debug"] = debug
         self.config["tile_mode"] = tile_mode
         self.config["reflect_mode"] = reflect_mode
+        self.config["grid_mode"] = grid_mode
         # Write the config back to disk.
         self.saveConfig()
         
