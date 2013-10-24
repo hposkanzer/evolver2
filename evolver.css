@@ -24,6 +24,12 @@
 	/*border: 1px solid blue;*/
 }
 
+#creature {
+	width: 800px;
+	height: 600px;
+	display: none;
+}
+
 .qm {
 	position: absolute;
 	width: 70;

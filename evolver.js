@@ -594,7 +594,7 @@ function Thumb(ring, parentThumb) {
 	this.openDialog2 = function() {
 
 		// Open the dialog.
-		$("#creature").css({display: "block"}); // It's hidden before the first dialog opens.
+		$("#creature").show(); // It's hidden before the first dialog opens.
 		$("#dialog").dialog({
 			title: "Creature " + self.name,
 			height: "auto",
