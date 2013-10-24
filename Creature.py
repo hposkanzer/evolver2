@@ -118,7 +118,12 @@ class Creature(Picklable.Picklable):
         
         # Pick a transformer to insert after.
         l = self.getTransformerPairs()
-        (prev, xform) = random.choice(l)
+        if (len(l) == 0):
+            # Only the reserved transformers!
+            # In this case, we'll actually insert the new transformer *after* the srcimg.
+            (prev, xform) = (None, self.head)
+        else:
+            (prev, xform) = random.choice(l)
         
         # Pick an input to insert before.
         inputs = xform.getInputs()  # Returns a copy
@@ -127,23 +132,33 @@ class Creature(Picklable.Picklable):
         # Generate a new transformer.
         next = self.experiment.getRandomTransform()
         # Add the old input to it.
-        next.addInput(inputs[i])
+        if (len(l) == 0):
+            next.addInput(xform)
+        else:
+            next.addInput(inputs[i])
         # Fill in any remaining inputs with new source images.
         for j in range(1, next.getExpectedInputCount()):
             next.addInput(self.getRandomSrcImage())
         
         # Insert the new transformer.
-        inputs[i] = next
-        xform.setInputs(inputs)
-        
-        # We say "before" because genomes are evaluated in bottom-up order.
-        self.logger.debug("Inserted %s before %s." % (next, xform))
+        if (len(l) == 0):
+            self.head = next
+            self.logger.debug("Inserted %s after %s." % (next, xform))
+        else:
+            inputs[i] = next
+            xform.setInputs(inputs)
+            # We say "before" because genomes are evaluated in bottom-up order.
+            self.logger.debug("Inserted %s before %s." % (next, xform))
     
     
     def deleteTransformer(self):
 
         # Pick a transformer to delete.
         l = self.getTransformerPairs()
+        if (len(l) == 0):
+            # Only the reserved transformers!
+            # Better abort
+            return
         (prev, xform) = random.choice(l)
         
         # Pick one of its inputs to pop up.
