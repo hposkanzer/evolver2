@@ -7,15 +7,14 @@ Number.prototype.mod = function(n) {
 var experimentName = "grid";
 var creatureWidth = 800;
 var creatureHeight = 600;
-
-//Window stuff
-var WIDTH;
-var HEIGHT;
+var thumbWidth = 152; // +2 to include the border
+var thumbHeight = 114; // +2 to include the border
+var thumbPadding = 10;
 
 // Generate stuff
 var CONCURRENCY = 5;
-var creatureCount = 25;
 var cols = 5;
+var rows = 5;
 
 var debug = false;
 
@@ -118,9 +117,9 @@ function init() {
 		success: function(data) {initConfig(data);}
 	});
 
-	// Get the dims of the frame & center the scrollbars.
-	WIDTH = document.clientWidth - 2; // -2 so we fit inside.
-	HEIGHT = document.clientHeight - 2; // -2 so we fit inside.
+	// Get the dims of the table
+	cols = Math.floor($(window).width() / (thumbWidth + thumbPadding));
+    rows = Math.floor($(window).height() / (thumbHeight + thumbPadding));
 
 	// Init the creatures.
 	initCreatures();
@@ -143,7 +142,6 @@ function initConfig(data) {
 
 
 function initCreatures(data) {
-    var rows = creatureCount / cols;
     for (var i = 0; i < rows; i++) {
         var tr = $("<tr>");
         tr.attr("id", "tr_" + i);
@@ -157,7 +155,7 @@ function initCreatures(data) {
 var generatedCount = 0;
 function initCreatureInner() {
     var i = generatedCount++;
-    if (i > creatureCount) {
+    if (i > (rows * cols)) {
         return;
     }
     console.log("Init " + i + "...");
