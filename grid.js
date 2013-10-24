@@ -82,23 +82,22 @@ function Thumb(td) {
 	
 	this.openDialog = function() {
 
-        // Open the dialog.
         $("#creature").attr("src", self.img.src);
-		$("#creature").css({display: "block"}); // It's hidden before the first dialog opens.
-		$("#dialog").dialog({
-			title: "Creature " + self.name,
-			height: "auto",
-			width: "auto",
-			position: "center",
-			modal: true,
-			resizable: false,
-			buttons: { 
-				"More Info": function() { window.open(self.page_url); },
-				"Add To Gallery": function() { window.open(self.gallery_url); },
-				"Close": function() { $("#dialog").dialog("close"); }
-			}
-		});
-		
+        $("#creature").show();
+        $("#dialog").dialog({
+            title: "Creature " + self.name,
+            height: "auto",
+            width: "auto",
+            position: "center",
+            modal: true,
+            resizable: false,
+            buttons: { 
+                "More Info": function() { window.open(self.page_url); },
+                "Add To Gallery": function() { window.open(self.gallery_url); },
+                "Close": function() { $("#dialog").dialog("close"); }
+            }
+        });
+
 	};
 
 
