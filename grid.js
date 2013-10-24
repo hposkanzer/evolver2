@@ -12,6 +12,9 @@ var creatureHeight = 600;
 var WIDTH;
 var HEIGHT;
 
+// Generate stuff
+var CONCURRENCY = 2;
+
 var debug = false;
 
 $(document).ready(init);
@@ -37,22 +40,26 @@ function Thumb(td) {
 	};
 
 
-	this.generate = function() {
+	this.generate = function(tr) {
+	    console.log("Generating...");
 		var data = {"e": experimentName, "rnd": Math.random()};
-		$.ajax({
+		var req = $.ajax({
 			type: "GET",
 			url: "/cgi-bin/new_creature.py", 
 			data: data,
 			dataType: "json",
 			async: true,
-			success: self.onLoad,
-			error: self.onFail // Doesn't get called when we're using jsonp.
 		});
+		req.fail(self.onFail);
+		req.done(self.onLoad, function() {
+		    initCreatureInner(tr);
+		})
 	};
 
 
 	this.onLoad = function(data) {
 		// Set the returned attributes.
+	    console.log("Generated " + data.name + ".");
 		self.name = data.name;
 		self.img.src = data.image_url;
 		self.thumb.src = data.thumb_url;
@@ -135,13 +142,23 @@ function initConfig(data) {
 }
 
 
+var remaining = 5;
 function initCreatures(data) {
     var tr = $("<tr>");
     $("#grid").append(tr);
-    for (var i = 0; i < 5; i++) {
-        var td = $("<td>");
-        tr.append(td);
-        var thumb = new Thumb(td);
-        thumb.generate();
+    for (var i = 0; i < CONCURRENCY; i++) {
+        initCreatureInner(tr);
     }
+}
+
+function initCreatureInner(tr) {
+    var i = remaining--;
+    if (i < 1) {
+        return;
+    }
+    console.log("Init loop " + i + "...");
+    var td = $("<td>");
+    tr.append(td);
+    var thumb = new Thumb(td);
+    thumb.generate(tr);
 }
