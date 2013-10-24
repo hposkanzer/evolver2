@@ -13,7 +13,9 @@ var WIDTH;
 var HEIGHT;
 
 // Generate stuff
-var CONCURRENCY = 2;
+var CONCURRENCY = 5;
+var creatureCount = 25;
+var cols = 5;
 
 var debug = false;
 
@@ -51,9 +53,8 @@ function Thumb(td) {
 			async: true,
 		});
 		req.fail(self.onFail);
-		req.done(self.onLoad, function() {
-		    initCreatureInner(tr);
-		})
+		req.done(self.onLoad);
+		req.done(initCreatureInner);
 	};
 
 
@@ -142,23 +143,28 @@ function initConfig(data) {
 }
 
 
-var remaining = 5;
 function initCreatures(data) {
-    var tr = $("<tr>");
-    $("#grid").append(tr);
+    var rows = creatureCount / cols;
+    for (var i = 0; i < rows; i++) {
+        var tr = $("<tr>");
+        tr.attr("id", "tr_" + i);
+        $("#grid").append(tr);
+    }
     for (var i = 0; i < CONCURRENCY; i++) {
-        initCreatureInner(tr);
+        initCreatureInner();
     }
 }
 
-function initCreatureInner(tr) {
-    var i = remaining--;
-    if (i < 1) {
+var generatedCount = 0;
+function initCreatureInner() {
+    var i = generatedCount++;
+    if (i > creatureCount) {
         return;
     }
-    console.log("Init loop " + i + "...");
+    console.log("Init " + i + "...");
+    var tr = $("#tr_" + Math.floor(i/cols));
     var td = $("<td>");
     tr.append(td);
     var thumb = new Thumb(td);
-    thumb.generate(tr);
+    thumb.generate();
 }
