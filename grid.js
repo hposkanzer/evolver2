@@ -121,8 +121,15 @@ function init() {
 	cols = Math.floor($(window).width() / (thumbWidth + thumbPadding));
     rows = Math.floor($(window).height() / (thumbHeight + thumbPadding));
 
-	// Init the creatures.
-	initCreatures();
+    // Init the creatures.
+    $.ajax({
+        type: "GET",
+        url: "/cgi-bin/get_creatures.py", 
+        data: {"e": experimentName},
+        dataType: "json",
+        async: false,  // Make sure we get it before we move on.
+        success: function(data) {initCreatures(data);}
+    });
 
 }
 
@@ -143,15 +150,23 @@ function initConfig(data) {
 
 
 function initCreatures(data) {
-    for (var i = 0; i < rows; i++) {
-        var tr = $("<tr>");
-        tr.attr("id", "tr_" + i);
-        $("#grid").append(tr);
+
+    if (data == null || data.length == 0) {
+        newCreatures();
+    } else {
+        restoreCreatures(data);
     }
+
+}
+
+
+function newCreatures() {
+    makeRows(rows);
     for (var i = 0; i < CONCURRENCY; i++) {
         initCreatureInner();
     }
 }
+
 
 var generatedCount = 0;
 function initCreatureInner() {
@@ -165,4 +180,26 @@ function initCreatureInner() {
     tr.append(td);
     var thumb = new Thumb(td);
     thumb.generate();
+}
+
+
+function restoreCreatures(thumbInfos) {
+    makeRows(Math.ceil(thumbInfos.length/cols));
+    for (var i = 0; i < thumbInfos.length; i++) {
+        var tr = $("#tr_" + Math.floor(i/cols));
+        var td = $("<td>");
+        tr.append(td);
+        var thumb = new Thumb(td);
+        thumb.onLoad(thumbInfos[i]);
+    }
+}
+
+
+function makeRows(count) {
+    // Make all the rows we'll need.
+    for (var i = 0; i < count; i++) {
+        var tr = $("<tr>");
+        tr.attr("id", "tr_" + i);
+        $("#grid").append(tr);
+    }
 }
