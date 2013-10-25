@@ -7,8 +7,10 @@
   
 
   
+  <link rel="stylesheet" type="text/css" href="index.css" />
   
-  <link rel="alternate" type="application/rss+xml" title="Photo Evolver" href="rss.xml"></head><body>
+  
+</head><body>
 <font size="-1"><a href="/">Chez Zeus</a></font>
 <center>
 <h2>Photo Evolver 2<br>
@@ -25,9 +27,15 @@ Algorithms</span><b>
       <table style="background-color: rgb(255, 255, 204); text-align: left; margin-left: auto; margin-right: auto;" border="1" cellpadding="10" cellspacing="0">
         <tbody>
           <tr>
-            <td style="text-align: center;"><a style="font-weight: bold;" href="/cgi-bin/new_experiment.py">Start a
-New Experiment!</a><i><br>
-            </i></td>
+            <td style="text-align: center;">
+            <form method="GET" action="/cgi-bin/new_experiment.py">
+            <input type="submit" value="Start a New Experiment!" id="newExp"><br>
+            <input type="checkbox" name="grid-mode" value="1">Grid
+            <input type="checkbox" name="tile-mode" value="1">Tile
+            <input type="checkbox" name="reflect-mode" value="1">Reflect
+            <input type="hidden" name="local-only" value="1">
+            </form>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -62,6 +70,13 @@ the original. If you like what you got, <span style="font-style: italic;">mutate
 rinse, repeat, and if all goes well you'll soon have a bunch of pretty
 pictures to your liking.&nbsp; If not, <span style="font-style: italic;">start over with a new experiment!</span>&nbsp; If you like a creature a lot, <span style="font-style: italic;">add it to <a href="/cgi-bin/gallery.py">the gallery</a>!</span><br>
       <br>
+The different mode checkboxes are:
+<ul>
+<li><b>Grid:</b>  Create a whole bunch of read-only creatures.  You can look at them, but you can't mutate them.</li>
+<li><b>Tile:</b>  Always apply a Shift filter first.  This tends to produce tile-able creatures.</li>
+<li><b>Reflect:</b>  Always apply a Mirror filter last.  This also produces tiles.</li>
+</ul>
+      
 By the way, you can come back and continue an experiment at any time,
 just bookmark it. You can also share an experiment or creature with a
 friend, and they can add their own mutations to it.<br>

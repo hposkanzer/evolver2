@@ -1,0 +1,12 @@
+@CHARSET "ISO-8859-1";
+
+#newExp {
+    background-color: #fff;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius:6px;
+    font-size: 20px;
+    text-decoration: none;
+    cursor: hand;
+}
+
