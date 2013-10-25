@@ -10,6 +10,8 @@ var creatureHeight = 600;
 var thumbWidth = 152; // +2 to include the border
 var thumbHeight = 114; // +2 to include the border
 var thumbPadding = 10;
+var tileMode = false;
+var reflectMode = false;
 
 // Generate stuff
 var CONCURRENCY = 5;
@@ -38,6 +40,16 @@ function Thumb(td) {
 
 	this.initialize = function() {
 		self.td.append(self.thumb);
+		if (tileMode || reflectMode) {
+		    $(self.thumb).hover(
+		            function() {
+		                $(document.body).css({"background-image": "url(" + self.img.src + ")"});
+		            },
+		            function() {
+		                $(document.body).css({"background-image": "none"});
+		            }
+		    );
+		}
 	};
 
 
@@ -81,6 +93,7 @@ function Thumb(td) {
 	
 	this.openDialog = function() {
 
+        //$(document.body).css({"background-image": "none"});
         $("#creature").attr("src", self.img.src);
         $("#creature").show();
         $("#dialog").dialog({
@@ -143,7 +156,9 @@ function initConfig(data) {
 
     experimentName = data.name;
 	creatureWidth = data.img_width;
-	creatureHeight = data.img_height
+	creatureHeight = data.img_height;
+	tileMode = data.tile_mode;
+	reflectMode = data.reflect_mode;
 	debug = data.debug;
 
 }
