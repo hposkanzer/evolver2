@@ -97,11 +97,11 @@ class SineWarp(WarpBase):
     """Warp the image using a random composition of sine waves"""
 
     def __init__(self,
-                 amplitudeRange = (3, 6.5),
-                 periodRange    = (0.04, 0.1),
+                 amplitude,
+                 period,
                  ):
-        self.amplitude = random.uniform(*amplitudeRange)
-        self.period = random.uniform(*periodRange)
+        self.amplitude = amplitude
+        self.period = period
         self.offset = (random.uniform(0, math.pi * 2 / self.period),
                        random.uniform(0, math.pi * 2 / self.period))
 
