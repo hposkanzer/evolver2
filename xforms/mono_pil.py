@@ -320,6 +320,36 @@ class Zoom(_xformer._MonoTransformer):
         return exs
 
 
+class Quad(_xformer._MonoTransformer):
+    
+    max_tweak = 0.3
+
+    def __init__(self):
+        _xformer._MonoTransformer.__init__(self)
+
+    # so we can know the size of the input image.    
+    def addInput(self, xform):
+        _xformer._MonoTransformer.addInput(self, xform)
+        self.args["quad"] = self.getRandomQuad()
+
+    def getArgsString(self):
+        return "(%s)" % (string.join(map(str, self.args["quad"]), ","))
+
+    def transformImage(self, img):
+        return img.transform(self.getDims(), Image.QUAD, self.args["quad"])
+
+    def tweakInner(self):
+        self.args["quad"] = self.tweakQuad(self.args["quad"], self.max_tweak)
+
+    def getExamplesInner(self, imgs):
+        exs = []
+        for i in range(3):
+            self.tweakInner()
+            print "%s..." % (self)
+            exs.append(self.getExampleImage(imgs))
+        return exs
+
+
 #############################################################################
 class Shift(_xformer._MonoTransformer):
     

@@ -283,7 +283,6 @@ class _Transformer(Picklable.Picklable):
         box[3] = random.randint(box[1], dims[1])
         return box
         
-
     def tweakBox(self, box, max_tweak):
         dims = self.getDims()
         max_changes = map(int, map(round, [dims[0] * self.max_tweak, dims[1] * self.max_tweak]))
@@ -292,6 +291,33 @@ class _Transformer(Picklable.Picklable):
         box[2] = self.newBoundary(box[2], max_changes[0], box[0], dims[0])
         box[3] = self.newBoundary(box[3], max_changes[1], box[1], dims[1])
         return box
+    
+    
+    def getRandomQuad(self):
+        dims = self.getDims()
+        box = [0] * 8
+        box[0] = random.randint(0, dims[0])
+        box[1] = random.randint(0, dims[1])
+        box[2] = random.randint(0, dims[0])
+        box[3] = random.randint(0, dims[1])
+        box[4] = random.randint(0, dims[0])
+        box[5] = random.randint(0, dims[1])
+        box[6] = random.randint(0, dims[0])
+        box[7] = random.randint(0, dims[1])
+        return box
+        
+    def tweakQuad(self, quad, max_tweak):
+        dims = self.getDims()
+        max_changes = map(int, map(round, [dims[0] * self.max_tweak, dims[1] * self.max_tweak]))
+        quad[0] = self.newBoundary(quad[0], max_changes[0], 0, dims[0])
+        quad[1] = self.newBoundary(quad[1], max_changes[1], 0, dims[1])
+        quad[2] = self.newBoundary(quad[0], max_changes[0], 0, dims[0])
+        quad[3] = self.newBoundary(quad[1], max_changes[1], 0, dims[1])
+        quad[4] = self.newBoundary(quad[0], max_changes[0], 0, dims[0])
+        quad[5] = self.newBoundary(quad[1], max_changes[1], 0, dims[1])
+        quad[6] = self.newBoundary(quad[0], max_changes[0], 0, dims[0])
+        quad[7] = self.newBoundary(quad[1], max_changes[1], 0, dims[1])
+        return quad
     
     
     def newBoundary(self, boundary, max_change, min_boundary, max_boundary):
