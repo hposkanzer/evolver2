@@ -107,24 +107,100 @@ function Thumb(index, td) {
 
 
 function openDialog() {
+    
     $("#creature").attr("src", currentCreature.img.src);
-    $("#dialog").dialog({
+
+    // Show & zoom the zoomer.  We start it off at the same location & size as the thumb,
+    // then animate it to where we think the dialog will display it.
+    $("#zoomer").show();
+    $("#zoomer").css(
+            {
+                width: currentCreature.thumb.width, 
+                height: currentCreature.thumb.height,
+                opacity: 1
+            });
+    $("#zoomer").offset($(currentCreature.thumb).offset());
+    $("#zoomer").animate(
+            {
+                // Dialog position is always relative to the window, not the container.
+                top: window.innerHeight/2 - currentCreature.img.height/2,
+                left: window.innerWidth/2 - currentCreature.img.width/2, 
+                width: currentCreature.img.width, 
+                height: currentCreature.img.height,
+                opacity: 0
+            }, 
+            {
+                easing : "quadEaseOut",
+                complete : function() {
+                    
+                    $("#dialog").dialog({
+                        title: "Creature " + currentCreature.name,
+                        height: "auto",
+                        width: "auto",
+                        position: "center",
+                        modal: true,
+                        resizable: false,
+                        buttons: { 
+                            "More Info": function() { window.open(currentCreature.page_url); },
+                            "Add To Gallery": function() { window.open(currentCreature.gallery_url); },
+                            "Close": closeDialog
+                        }
+                    });
+                    $("#zoomer").hide();
+                    
+                }
+            });
+};
+
+
+function closeDialog() {
+    if (currentCreature != null) {
+        
+        $("#dialog").dialog("close");
+        
+        $("#zoomer").show();
+        $("#zoomer").css(
+                {
+                    width: currentCreature.img.width, 
+                    height: currentCreature.img.height,
+                    opacity: 0
+                });
+        $("#zoomer").offset($(currentCreature.img).offset());
+        $("#zoomer").animate(
+                {
+                    // Dialog position is always relative to the window, not the container.
+                    top: $(currentCreature.thumb).offset().top+1, // +1 to account for the border
+                    left: $(currentCreature.thumb).offset().left+1, // +1 to account for the border 
+                    width: currentCreature.thumb.width, 
+                    height: currentCreature.thumb.height,
+                    opacity: 1
+                }, 
+                {
+                    easing : "quadEaseOut",
+                    complete : function() {
+                        $("#zoomer").hide();
+                    }
+                });
+
+        currentCreature = null; 
+
+    }
+}
+
+
+function setDialog() {
+    $("#creature").attr("src", currentCreature.img.src);
+    $("#dialog").dialog("option", {
         title: "Creature " + currentCreature.name,
-        height: "auto",
-        width: "auto",
-        position: "center",
         modal: true,
         resizable: false,
         buttons: { 
             "More Info": function() { window.open(currentCreature.page_url); },
             "Add To Gallery": function() { window.open(currentCreature.gallery_url); },
-            "Close": function() { 
-                currentCreature = null; 
-                $("#dialog").dialog("close"); 
-            }
+            "Close": closeDialog
         }
     });
-};
+}
 
 
 function getPreviousCreature(index) {
@@ -172,10 +248,7 @@ function init() {
         switch ( e.keyCode ) {
             // Escape
             case 27:
-                if (currentCreature != null) {
-                    currentCreature = null; 
-                    $("#dialog").dialog("close");
-                }
+                closeDialog();
                 break;
             // Left arrow.
             case 37:  
@@ -204,14 +277,14 @@ function init() {
 function dialogPrevious() {
     if (currentCreature != null) {
         currentCreature = getPreviousCreature(currentCreature.index);
-        openDialog();
+        setDialog();
     };
 }
 
 function dialogNext() {
     if (currentCreature != null) {
         currentCreature = getNextCreature(currentCreature.index);
-        openDialog();
+        setDialog();
     };
 }
 

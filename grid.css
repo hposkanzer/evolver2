@@ -18,6 +18,13 @@
 	cursor: hand;
 }
 
+#zoomer {
+	position: absolute;
+	display: none;
+	border: 2px solid blue;
+	z-index: 3;
+}
+
 #dialog {
 	display: none;
 }
