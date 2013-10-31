@@ -165,14 +165,27 @@ function init() {
 	cols = Math.floor($(window).width() / (thumbWidth + thumbPadding));
     rows = Math.floor($(window).height() / (thumbHeight + thumbPadding));
 
-    // Set up the left/right click handlers
-    $("#left_img").parent().click(function() {
-        currentCreature = getPreviousCreature(currentCreature.index);
-        openDialog();
-    });
-    $("#right_img").parent().click(function() {
-        currentCreature = getNextCreature(currentCreature.index);
-        openDialog();
+    // Set up the left/right handlers
+    $("#left_img").parent().click(dialogPrevious);
+    $("#right_img").parent().click(dialogNext);
+    $(document).keydown(function(e) {
+        switch ( e.keyCode ) {
+            // Escape
+            case 27:
+                if (currentCreature != null) {
+                    currentCreature = null; 
+                    $("#dialog").dialog("close");
+                }
+                break;
+            // Left arrow.
+            case 37:  
+                dialogPrevious(); 
+                break;
+            // Right arrow.
+            case 39: 
+                dialogNext(); 
+                break;
+        }
     });
 
     // Init the creatures.
@@ -185,6 +198,21 @@ function init() {
         success: function(data) {initCreatures(data);}
     });
 
+}
+
+
+function dialogPrevious() {
+    if (currentCreature != null) {
+        currentCreature = getPreviousCreature(currentCreature.index);
+        openDialog();
+    };
+}
+
+function dialogNext() {
+    if (currentCreature != null) {
+        currentCreature = getNextCreature(currentCreature.index);
+        openDialog();
+    };
 }
 
 
