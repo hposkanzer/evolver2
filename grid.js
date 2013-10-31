@@ -18,16 +18,21 @@ var CONCURRENCY = 5;
 var cols = 5;
 var rows = 5;
 
+// Dialog stuff
+var byIndex = [];
+var currentCreature = null;
+
 var debug = false;
 
 $(document).ready(init);
 
 
-function Thumb(td) {
+function Thumb(index, td) {
 
 	var self = this; // O Javascript Joy!
 
 	this.name = null;
+	this.index = index;
 	this.td = td;
 	this.img = new Image(); // The full-size image.
 	this.img.src = null;
@@ -39,6 +44,7 @@ function Thumb(td) {
 	this.gallery_url = null;
 
 	this.initialize = function() {
+	    byIndex[self.index] = self;
 		self.td.append(self.thumb);
 		if (tileMode || reflectMode) {
 		    $(self.thumb).hover(
@@ -79,7 +85,10 @@ function Thumb(td) {
 		self.page_url = data.page_url;
 		self.gallery_url = data.gallery_url;
 		// Add the dialog handler.
-		$(self.thumb).click(self.openDialog);
+		$(self.thumb).click(function() {
+		    currentCreature = self;
+		    openDialog();
+		});
 		// Change the class.
 		$(self.thumb).removeClass("qm").addClass("thumb");
 	};
@@ -91,31 +100,53 @@ function Thumb(td) {
 	};
 
 	
-	this.openDialog = function() {
-
-        //$(document.body).css({"background-image": "none"});
-        $("#creature").attr("src", self.img.src);
-        $("#creature").show();
-        $("#dialog").dialog({
-            title: "Creature " + self.name,
-            height: "auto",
-            width: "auto",
-            position: "center",
-            modal: true,
-            resizable: false,
-            buttons: { 
-                "More Info": function() { window.open(self.page_url); },
-                "Add To Gallery": function() { window.open(self.gallery_url); },
-                "Close": function() { $("#dialog").dialog("close"); }
-            }
-        });
-
-	};
-
-
 	// Call the initialization method.
 	this.initialize();
 
+}
+
+
+function openDialog() {
+    $("#creature").attr("src", currentCreature.img.src);
+    $("#dialog").dialog({
+        title: "Creature " + currentCreature.name,
+        height: "auto",
+        width: "auto",
+        position: "center",
+        modal: true,
+        resizable: false,
+        buttons: { 
+            "More Info": function() { window.open(currentCreature.page_url); },
+            "Add To Gallery": function() { window.open(currentCreature.gallery_url); },
+            "Close": function() { 
+                currentCreature = null; 
+                $("#dialog").dialog("close"); 
+            }
+        }
+    });
+};
+
+
+function getPreviousCreature(index) {
+    var i = index;
+    while (true) {
+        i = (i - 1).mod(byIndex.length)
+        var creature = byIndex[i];
+        if (creature != null && creature.name != null) {
+            return creature;
+        }
+    }
+}
+
+function getNextCreature(index) {
+    var i = index;
+    while (true) {
+        i = (i + 1).mod(byIndex.length);
+        var creature = byIndex[i];
+        if (creature != null && creature.name != null) {
+            return creature;
+        }
+    }
 }
 
 
@@ -133,6 +164,16 @@ function init() {
 	// Get the dims of the table
 	cols = Math.floor($(window).width() / (thumbWidth + thumbPadding));
     rows = Math.floor($(window).height() / (thumbHeight + thumbPadding));
+
+    // Set up the left/right click handlers
+    $("#left_img").parent().click(function() {
+        currentCreature = getPreviousCreature(currentCreature.index);
+        openDialog();
+    });
+    $("#right_img").parent().click(function() {
+        currentCreature = getNextCreature(currentCreature.index);
+        openDialog();
+    });
 
     // Init the creatures.
     $.ajax({
@@ -193,7 +234,7 @@ function initCreatureInner() {
     var tr = $("#tr_" + Math.floor(i/cols));
     var td = $("<td>");
     tr.append(td);
-    var thumb = new Thumb(td);
+    var thumb = new Thumb(i, td);
     thumb.generate();
 }
 
@@ -204,7 +245,7 @@ function restoreCreatures(thumbInfos) {
         var tr = $("#tr_" + Math.floor(i/cols));
         var td = $("<td>");
         tr.append(td);
-        var thumb = new Thumb(td);
+        var thumb = new Thumb(i, td);
         thumb.onLoad(thumbInfos[i]);
     }
 }

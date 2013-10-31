@@ -83,6 +83,8 @@ class Experiment(Picklable.Picklable):
     delete_img = "delete.gif"
     mutate_img = "mutate.jpg"
     empty_img = "empty.gif"
+    left_img = "left.png"
+    right_img = "right.png"
     srcimg_dir = "srcimgs"
     xforms_dir = "xforms"
     creatures_dir = "creatures"
@@ -120,6 +122,8 @@ class Experiment(Picklable.Picklable):
         self.copyFromBase(self.delete_img)
         self.copyFromBase(self.mutate_img)
         self.copyFromBase(self.empty_img)
+        self.copyFromBase(self.left_img)
+        self.copyFromBase(self.right_img)
         # For now we're going to use the same set of images & xforms for every experiment.
         self.copyFromBase(self.srcimg_dir)
         self.copyFromBase(self.xforms_dir)

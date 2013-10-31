@@ -18,8 +18,26 @@
 	cursor: hand;
 }
 
+#dialog {
+	display: none;
+}
+
 #creature {
 	width: 800px;
 	height: 600px;
-	display: none;
+	vertical-align: middle;
+}
+
+#left_img {
+	margin-right: 10px;
+	vertical-align: middle;
+	border: 0px;
+	cursor: hand;
+}
+
+#right_img {
+	margin-left: 10px;
+	vertical-align: middle;
+	border: 0px;
+	cursor: hand;
 }
