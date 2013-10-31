@@ -255,6 +255,30 @@ class RankFilter(_StatsFilter):
         return exs
 
 
+class Kernel(_xformer._MonoTransformer):
+    
+    def __init__(self):
+        _xformer._MonoTransformer.__init__(self)
+        self.args["kernel"] = map(lambda x: random.randint(-10,10), range(25))
+
+    def getArgsString(self):
+        return "(%s)" % (string.join(map(str, self.args["kernel"]), ","))
+
+    def transformImage(self, img):
+        return img.filter(ImageFilter.Kernel((5,5), self.args["kernel"]))
+    
+    def tweakInner(self):
+        self.args["kernel"] = map(lambda x: random.randint(-10,10), range(25))
+        
+    def getExamplesInner(self, imgs):
+        exs = []
+        for i in range(3):
+            self.tweakInner()
+            print "%s..." % (self)
+            exs.append(self.getExampleImage(imgs))
+        return exs
+    
+
 #############################################################################
 class Zoom(_xformer._MonoTransformer):
     
