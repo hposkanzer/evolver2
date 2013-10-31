@@ -19,18 +19,17 @@ class Speckle(_xformer._MonoTransformer):
         self.tweakInner()
 
     def getArgsString(self):
-        return "(%s, %.2f, %s)" % (self.args["blockSize"], self.args["sigma"], self.args["iterations"])
+        return "(%s, %.2f)" % (self.args["blockSize"], self.args["sigma"])
 
     def transformImage(self, img):
         ret = img.copy()
-        d = _Distortions.WigglyBlocks(self.args["blockSize"], self.args["sigma"], self.args["iterations"])
+        d = _Distortions.WigglyBlocks(self.args["blockSize"], self.args["sigma"], 1000)
         d.render(ret)
         return ret
     
     def tweakInner(self):
         self.args["blockSize"] = random.randint(0, self.maxBlockSize)
         self.args["sigma"] = random.uniform(0, 10)
-        self.args["iterations"] = 1000 #random.randint(0, 2000)
         
     def getExamplesInner(self, imgs):
         exs = []
