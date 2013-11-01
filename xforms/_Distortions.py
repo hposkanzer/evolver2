@@ -99,11 +99,11 @@ class SineWarp(WarpBase):
     def __init__(self,
                  amplitude,
                  period,
+                 offset
                  ):
         self.amplitude = amplitude
         self.period = period
-        self.offset = (random.uniform(0, math.pi * 2 / self.period),
-                       random.uniform(0, math.pi * 2 / self.period))
+        self.offset = offset
 
     def getTransform(self, image):
         return (lambda x, y,

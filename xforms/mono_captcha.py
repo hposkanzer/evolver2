@@ -6,6 +6,8 @@ Created on Aug 5, 2010
 import string
 import _xformer
 import random
+import math
+
 import _Distortions
 
 
@@ -52,23 +54,27 @@ class Sine(_xformer._MonoTransformer):
         self.tweakInner()
 
     def getArgsString(self):
-        return "(%.2f, %.2f)" % (self.args["amplitude"], self.args["period"])
+        return "(%.2f, %.2f, [%.2f,%.2f])" % (self.args["amplitude"], self.args["period"], self.args["offset"][0], self.args["offset"][1])
 
     def transformImage(self, img):
-        d = _Distortions.SineWarp(self.args["amplitude"], self.args["period"])
+        d = _Distortions.SineWarp(self.args["amplitude"], self.args["period"], self.args["offset"])
         return d.render(img)
     
     def tweakInner(self):
         self.args["amplitude"] = random.uniform(0, self.maxAmplitude)
         self.args["period"] = random.uniform(0, self.maxPeriod)
+        self.args["offset"] = (random.uniform(0, math.pi * 2 / self.args["period"]),
+                               random.uniform(0, math.pi * 2 / self.args["period"]))
         
     def getExamplesInner(self, imgs):
         exs = []
-        for a in (10, 20, 40):
+        for a in (10, 40):
             for p in (0.01, 0.05, 0.1):
                 self.args["amplitude"] = a
                 self.args["period"] = p
-                print "%s..." % (self)
-                exs.append(self.getExampleImage(imgs))
+                for o in ((0,0), (math.pi/p,math.pi/p)):
+                    self.args["offset"] = o
+                    print "%s..." % (self)
+                    exs.append(self.getExampleImage(imgs))
         return exs
 
