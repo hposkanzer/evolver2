@@ -15,35 +15,46 @@ import _Distortions
 class Speckle(_xformer._MonoTransformer):
     
     maxBlockSize = 50
+    randomModePct = 0.2
     
     def __init__(self):
         _xformer._MonoTransformer.__init__(self)
         self.tweakInner()
 
     def getArgsString(self):
-        return "(%s, %.2f)" % (self.args["blockSize"], self.args["sigma"])
+        return "(%s, %.2f, %.2f)" % (self.args["blockSize"], self.args["sigma"], self.args["angle"])
 
     def transformImage(self, img):
         ret = img.copy()
-        d = _Distortions.WigglyBlocks(self.args["blockSize"], self.args["sigma"], self.args["iters"])
+        d = _Distortions.WigglyBlocks(self.args["blockSize"], self.args["sigma"], self.args["angle"], self.args["iters"])
         d.render(ret)
         return ret
     
     def tweakInner(self):
         self.args["blockSize"] = random.randint(0, self.maxBlockSize)
         self.args["sigma"] = random.uniform(0, 10)
-        self.args["iters"] = -180 * self.args["blockSize"] + 10000
+        if (random.uniform(0, 1.0) <= self.randomModePct):
+            self.args["angle"] = -1
+        else:
+            self.args["angle"] = random.uniform(0, math.pi * 2)
+        self.args["iters"] = self.getIterations()
         
     def getExamplesInner(self, imgs):
         exs = []
-        for b in (10, 50):
-            for s in (0.1, 5, 10):
-                self.args["blockSize"] = b
-                self.args["sigma"] = s
-                self.args["iters"] = -180 * self.args["blockSize"] + 10000
-                print "%s..." % (self)
-                exs.append(self.getExampleImage(imgs))
+        for a in (-1, 0.0, math.pi/2):
+            for b in (10, 50):
+                for s in (0.1, 10):
+                    self.args["blockSize"] = b
+                    self.args["sigma"] = s
+                    self.args["angle"] = a
+                    self.args["iters"] = self.getIterations()
+                    print "%s..." % (self)
+                    exs.append(self.getExampleImage(imgs))
         return exs
+    
+    def getIterations(self):
+        # From 10000 down to 1000
+        return -180 * self.args["blockSize"] + 10000
 
 
 class Sine(_xformer._MonoTransformer):

@@ -13,9 +13,10 @@ import random, math
 
 class WigglyBlocks():
     """Randomly select and shift blocks of the image"""
-    def __init__(self, blockSize=16, sigma=0.01, iterations=300):
+    def __init__(self, blockSize=16, sigma=0.01, angle=-1, iterations=300):
         self.blockSize = blockSize
         self.sigma = sigma
+        self.angle = angle
         self.iterations = iterations
         self.seed = random.random()
 
@@ -30,8 +31,13 @@ class WigglyBlocks():
             # Figure out how much to move it.
             # The call to floor() is important so we always round toward
             # 0 rather than to -inf. Just int() would bias the block motion.
-            mx = int(math.floor(r.normalvariate(0, self.sigma)))
-            my = int(math.floor(r.normalvariate(0, self.sigma)))
+            if (self.angle >= 0):
+                m = r.normalvariate(0, self.sigma)
+                mx = int(math.floor(math.cos(self.angle) * m))
+                my = int(math.floor(math.sin(self.angle) * m))
+            else:
+                mx = int(math.floor(r.normalvariate(0, self.sigma)))
+                my = int(math.floor(r.normalvariate(0, self.sigma)))
 
             # Now actually move the block
             image.paste(block, (bx+mx, by+my))
