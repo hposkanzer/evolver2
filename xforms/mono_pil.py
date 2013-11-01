@@ -257,9 +257,11 @@ class RankFilter(_StatsFilter):
 
 class Kernel(_xformer._MonoTransformer):
     
+    maxValue = 4
+    
     def __init__(self):
         _xformer._MonoTransformer.__init__(self)
-        self.args["kernel"] = map(lambda x: random.randint(-10,10), range(25))
+        self.tweakInner()
 
     def getArgsString(self):
         return "(%s)" % (string.join(map(str, self.args["kernel"]), ","))
@@ -268,12 +270,25 @@ class Kernel(_xformer._MonoTransformer):
         return img.filter(ImageFilter.Kernel((5,5), self.args["kernel"]))
     
     def tweakInner(self):
-        self.args["kernel"] = map(lambda x: random.randint(-10,10), range(25))
+        self.args["kernel"] = map(lambda x: random.randint(-self.maxValue, self.maxValue), range(25))
         
     def getExamplesInner(self, imgs):
         exs = []
-        for i in range(3):
-            self.tweakInner()
+        kk = []
+        kk.append( [ 4, 3, 2, 1, 0,
+                     3, 2, 1, 0,-1,
+                     2, 1, 0,-1,-2,
+                     1, 0,-1,-2,-3,
+                     0,-1,-2,-3,-4] )
+        kk.append( map( lambda x: -x, kk[-1]) )
+        kk.append( [-2,-1, 0,-1,-2,
+                    -1, 0, 1, 0,-1,
+                     0, 1, 2, 1, 0,
+                    -1, 0, 1, 0,-1,
+                    -2,-1, 0,-1,-2] )
+        kk.append(self.args["kernel"])
+        for k in kk:
+            self.args["kernel"] = k
             print "%s..." % (self)
             exs.append(self.getExampleImage(imgs))
         return exs
