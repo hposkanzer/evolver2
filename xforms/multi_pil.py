@@ -343,3 +343,68 @@ class PasteMask(_TripleInput):
             exs.append(self.getExampleImage(imgs))
         return exs
     
+
+#############################################################################
+class _QuadrupleInput(_xformer._Transformer):
+    
+    def getExpectedInputCount(self):
+        return 4
+
+
+#############################################################################
+class MergeCMYK(_QuadrupleInput):
+
+    orders = [(0, 1, 2, 3), 
+              (0, 1, 3, 2), 
+              (0, 2, 1, 3), 
+              (0, 2, 3, 1), 
+              (0, 3, 1, 2), 
+              (0, 3, 2, 1), 
+              (1, 0, 2, 3), 
+              (1, 0, 3, 2), 
+              (1, 2, 0, 3), 
+              (1, 2, 3, 0), 
+              (1, 3, 0, 2), 
+              (1, 3, 2, 0), 
+              (2, 0, 1, 3), 
+              (2, 0, 3, 1), 
+              (2, 1, 0, 3), 
+              (2, 1, 3, 0), 
+              (2, 3, 0, 1), 
+              (2, 3, 1, 0), 
+              (3, 0, 1, 2), 
+              (3, 0, 2, 1), 
+              (3, 1, 0, 2), 
+              (3, 1, 2, 0), 
+              (3, 2, 0, 1), 
+              (3, 2, 1, 0)]
+    
+    def __init__(self):
+        _QuadrupleInput.__init__(self)
+        self.args["order"] = random.choice(self.orders)
+
+    def getArgsString(self):
+        l = [""] * 4
+        for i in range(len(self.args["order"])):
+            j = self.args["order"][i]
+            l[j] = "CMYK"[i]
+        return "(%s%s%s%s)" % tuple(l)
+
+    def transformInner(self, imgs):
+        channels = []
+        for i in self.args["order"]:
+            channels.append(imgs[i].convert("L"))
+        return Image.merge("CMYK", channels).convert("RGB")
+    
+    def tweakInner(self):
+        self.args["order"] = random.choice(self.orders)
+
+    def getExamplesInner(self, imgs):
+        exs = []
+        for order in self.orders:
+            self.args["order"] = order
+            print "%s..." % (self)
+            exs.append(self.getExampleImage(imgs))
+        return exs
+    
+
