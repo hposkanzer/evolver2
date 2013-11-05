@@ -795,14 +795,16 @@ class SharpnessEnhancer(_Enhancer):
 
 
 #############################################################################
-class Cartoon(_xformer._MonoTransformer):    
+class Dots(_xformer._MonoTransformer):    
+    
+    modes = ["SCALE", "GRID"]
     
     def __init__(self):
         _xformer._MonoTransformer.__init__(self)
         self.tweakInner()
 
     def getArgsString(self):
-        return "(%d)" % (self.args["sample"])
+        return "(%d, %s)" % (self.args["sample"], self.args["mode"])
 
     def transformImage(self, img):
         ret = Image.new('RGB', self.getDims())
@@ -812,7 +814,10 @@ class Cartoon(_xformer._MonoTransformer):
             for y in xrange(0, self.getDims()[1], sample):
                 box = img.crop((x, y, x + sample, y + sample))
                 stat = ImageStat.Stat(box)
-                diameter = (sum(stat.mean) / (255 * 3))**0.5
+                if (self.args["mode"] == "SCALE"):
+                    diameter = (sum(stat.mean) / (255 * 3))**0.5
+                else:
+                    diameter = 0.9
                 edge = 0.5*(1-diameter)*sample
                 x_pos, y_pos = (x+edge), (y+edge)
                 box_edge = sample*diameter
@@ -821,13 +826,16 @@ class Cartoon(_xformer._MonoTransformer):
 
     def tweakInner(self):
         self.args["sample"] = random.randint(2, 50)
+        self.args["mode"] = random.choice(self.modes)
 
     def getExamplesInner(self, imgs):
         exs = []
-        for sample in [10, 30]:
-            self.args["sample"] = sample
-            print "%s..." % (self)
-            exs.append(self.getExampleImage(imgs))
+        for mode in self.modes:
+            for sample in [10, 30]:
+                self.args["sample"] = sample
+                self.args["mode"] = mode
+                print "%s..." % (self)
+                exs.append(self.getExampleImage(imgs))
         return exs
 
 
