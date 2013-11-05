@@ -13,6 +13,7 @@ import ImageOps
 import ImageEnhance
 import ImageChops
 import ImageDraw
+import ImageStat
 
 
 #############################################################################
@@ -791,3 +792,42 @@ class SharpnessEnhancer(_Enhancer):
     enhancer = ImageEnhance.Sharpness
     min_factor = 0.0
     max_factor = 2.0
+
+
+#############################################################################
+class Cartoon(_xformer._MonoTransformer):    
+    
+    def __init__(self):
+        _xformer._MonoTransformer.__init__(self)
+        self.tweakInner()
+
+    def getArgsString(self):
+        return "(%d)" % (self.args["sample"])
+
+    def transformImage(self, img):
+        ret = Image.new('RGB', self.getDims())
+        draw = ImageDraw.Draw(ret)
+        sample = self.args["sample"]
+        for x in xrange(0, self.getDims()[0], sample):
+            for y in xrange(0, self.getDims()[1], sample):
+                box = img.crop((x, y, x + sample, y + sample))
+                stat = ImageStat.Stat(box)
+                diameter = (sum(stat.mean) / (255 * 3))**0.5
+                edge = 0.5*(1-diameter)*sample
+                x_pos, y_pos = (x+edge), (y+edge)
+                box_edge = sample*diameter
+                draw.ellipse((x_pos, y_pos, x_pos + box_edge, y_pos + box_edge), fill=tuple(map(int, stat.mean)))
+        return ret
+
+    def tweakInner(self):
+        self.args["sample"] = random.randint(2, 50)
+
+    def getExamplesInner(self, imgs):
+        exs = []
+        for sample in [10, 30]:
+            self.args["sample"] = sample
+            print "%s..." % (self)
+            exs.append(self.getExampleImage(imgs))
+        return exs
+
+
