@@ -111,7 +111,6 @@ class Halftone(object):
 if __name__ == '__main__': 
 
     import sys
-    import halftone
 
     path = sys.argv[1]
 
