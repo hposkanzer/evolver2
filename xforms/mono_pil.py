@@ -846,6 +846,36 @@ class InvertBands(_xformer._MonoTransformer):
         return exs
 
 
+class _ContrastBands(_xformer._MonoTransformer):    
+    
+    def __init__(self):
+        _xformer._MonoTransformer.__init__(self)
+        self.tweakInner()
+
+    def getArgsString(self):
+        return "(%s, %s, %s)" % (self.args["r"], self.args["g"], self.args["b"])
+
+    def transformImage(self, img):
+        r = map(lambda x, y=self.args["r"]: x/255.0 * (y[1] - y[0]) + y[0], range(256))
+        b = map(lambda x, y=self.args["b"]: x/255.0 * (y[1] - y[0]) + y[0], range(256))
+        g = map(lambda x, y=self.args["g"]: x/255.0 * (y[1] - y[0]) + y[0], range(256))
+        t = r + g + b
+        return img.point(t)
+
+    def tweakInner(self):
+        self.args["r"] = (random.randint(0, 255), random.randint(0, 255))
+        self.args["g"] = (random.randint(0, 255), random.randint(0, 255))
+        self.args["b"] = (random.randint(0, 255), random.randint(0, 255))
+
+    def getExamplesInner(self, imgs):
+        exs = []
+        for r in range(5):
+            self.tweakInner()
+            print "%s..." % (self)
+            exs.append(self.getExampleImage(imgs))
+        return exs
+
+
 #############################################################################
 class _Enhancer(_xformer._MonoTransformer):
     
