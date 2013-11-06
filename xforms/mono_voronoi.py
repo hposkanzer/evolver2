@@ -55,10 +55,11 @@ class Voronoi(_xformer._MonoTransformer):
     
     def transformViaTriangulation(self, img):
         ret = img.copy()
-        pts = []
-        for i in range(self.args["points"]):
-            pt = _voronoi.Site(random.randint(1, img.size[0]-1), random.randint(1, img.size[1]-1))
-            pts.append(pt)
+        pts = {}
+        while (len(pts) < self.args["points"]):
+            pt = _voronoi.Site(random.randint(0, img.size[0]-1), random.randint(0, img.size[1]-1))
+            pts[(pt.x, pt.y)] = pt
+        pts = pts.values()
         context = _voronoi.computeVoronoiDiagram(pts)
         draw = ImageDraw.Draw(ret)
         for (pti, edges) in context.polygons.items():
