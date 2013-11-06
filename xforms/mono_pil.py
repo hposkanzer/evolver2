@@ -776,6 +776,41 @@ class ShiftValues(_xformer._MonoTransformer):
         return exs
 
 
+class ShiftBands(_xformer._MonoTransformer):    
+    
+    def __init__(self):
+        _xformer._MonoTransformer.__init__(self)
+        self.tweakInner()
+
+    def getArgsString(self):
+        return "(%d, %d, %d)" % (self.args["r"], self.args["g"], self.args["b"])
+
+    def transformImage(self, img):
+        s = range(256)
+        r = s[self.args["r"]:] + s[:self.args["r"]]
+        g = s[self.args["g"]:] + s[:self.args["g"]]
+        b = s[self.args["b"]:] + s[:self.args["b"]]
+        t = r + g + b
+        return img.point(t)
+
+    def tweakInner(self):
+        self.args["r"] = random.randint(0, 255)
+        self.args["g"] = random.randint(0, 255)
+        self.args["b"] = random.randint(0, 255)
+
+    def getExamplesInner(self, imgs):
+        exs = []
+        for r in [0, 127]:
+            for g in [0, 127]:
+                for b in [0, 127]:
+                    self.args["r"] = r
+                    self.args["g"] = g
+                    self.args["b"] = b
+                    print "%s..." % (self)
+                    exs.append(self.getExampleImage(imgs))
+        return exs
+
+
 #############################################################################
 class _Enhancer(_xformer._MonoTransformer):
     
