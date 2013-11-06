@@ -811,6 +811,41 @@ class ShiftBands(_xformer._MonoTransformer):
         return exs
 
 
+class InvertBands(_xformer._MonoTransformer):    
+    
+    band_options = ['', 'R', 'B', 'G', 'RB', 'RG', 'BG', 'RBG']
+    
+    def __init__(self):
+        _xformer._MonoTransformer.__init__(self)
+        self.tweakInner()
+
+    def getArgsString(self):
+        return "(%s)" % (self.args["bands"])
+
+    def transformImage(self, img):
+        s = range(256)
+        r = range(256)
+        r.reverse()
+        l = []
+        for band in "RGB":
+            if (band in self.args["bands"]):
+                l.extend(r)
+            else:
+                l.extend(s)
+        return img.point(l)
+
+    def tweakInner(self):
+        self.args["bands"] = random.choice(self.band_options)
+        
+    def getExamplesInner(self, imgs):
+        exs = []
+        for bands in self.band_options:
+            self.args["bands"] = bands
+            print "%s..." % (self)
+            exs.append(self.getExampleImage(imgs))
+        return exs
+
+
 #############################################################################
 class _Enhancer(_xformer._MonoTransformer):
     
