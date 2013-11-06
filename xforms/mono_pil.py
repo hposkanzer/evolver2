@@ -752,6 +752,30 @@ class Solarize(_xformer._MonoTransformer):
         return exs
 
 
+class ShiftValues(_xformer._MonoTransformer):    
+    
+    def __init__(self):
+        _xformer._MonoTransformer.__init__(self)
+        self.args["shift"] = random.randint(0, 255)
+
+    def getArgsString(self):
+        return "(%d)" % (self.args["shift"])
+
+    def transformImage(self, img):
+        return img.point(lambda x: (x + self.args["shift"]) % 256)
+
+    def tweakInner(self):
+        self.args["shift"] = random.randint(0, 255)
+
+    def getExamplesInner(self, imgs):
+        exs = []
+        for shift in [10, 63, 127, 181, 245]:
+            self.args["shift"] = shift
+            print "%s..." % (self)
+            exs.append(self.getExampleImage(imgs))
+        return exs
+
+
 #############################################################################
 class _Enhancer(_xformer._MonoTransformer):
     
