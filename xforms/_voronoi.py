@@ -751,7 +751,7 @@ def computeVoronoiDiagram(points):
     siteList = SiteList(points)
     context  = Context()
     voronoi(siteList,context)
-    return (context.vertices,context.lines,context.edges)
+    return context
 
 #------------------------------------------------------------------
 def computeDelaunayTriangulation(points):
@@ -763,7 +763,7 @@ def computeDelaunayTriangulation(points):
     context  = Context()
     context.triangulate = true
     voronoi(siteList,context)
-    return context.triangles
+    return context
 
 #-----------------------------------------------------------------------------
 if __name__=="__main__":
