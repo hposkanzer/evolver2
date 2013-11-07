@@ -311,12 +311,12 @@ class _Transformer(Picklable.Picklable):
         max_changes = map(int, map(round, [dims[0] * self.max_tweak, dims[1] * self.max_tweak]))
         quad[0] = self.newBoundary(quad[0], max_changes[0], 0, dims[0])
         quad[1] = self.newBoundary(quad[1], max_changes[1], 0, dims[1])
-        quad[2] = self.newBoundary(quad[0], max_changes[0], 0, dims[0])
-        quad[3] = self.newBoundary(quad[1], max_changes[1], 0, dims[1])
-        quad[4] = self.newBoundary(quad[0], max_changes[0], 0, dims[0])
-        quad[5] = self.newBoundary(quad[1], max_changes[1], 0, dims[1])
-        quad[6] = self.newBoundary(quad[0], max_changes[0], 0, dims[0])
-        quad[7] = self.newBoundary(quad[1], max_changes[1], 0, dims[1])
+        quad[2] = self.newBoundary(quad[2], max_changes[0], 0, dims[0])
+        quad[3] = self.newBoundary(quad[3], max_changes[1], 0, dims[1])
+        quad[4] = self.newBoundary(quad[4], max_changes[0], 0, dims[0])
+        quad[5] = self.newBoundary(quad[5], max_changes[1], 0, dims[1])
+        quad[6] = self.newBoundary(quad[6], max_changes[0], 0, dims[0])
+        quad[7] = self.newBoundary(quad[7], max_changes[1], 0, dims[1])
         return quad
     
     
