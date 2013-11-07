@@ -293,17 +293,27 @@ class _Transformer(Picklable.Picklable):
         return box
     
     
-    def getRandomQuad(self):
+    def getRandomQuad(self, constrain=False):
         dims = self.getDims()
         box = [0] * 8
-        box[0] = random.randint(0, dims[0])
-        box[1] = random.randint(0, dims[1])
-        box[2] = random.randint(0, dims[0])
-        box[3] = random.randint(0, dims[1])
-        box[4] = random.randint(0, dims[0])
-        box[5] = random.randint(0, dims[1])
-        box[6] = random.randint(0, dims[0])
-        box[7] = random.randint(0, dims[1])
+        if constrain:
+            box[0] = random.randint(0, dims[0]/2)
+            box[1] = random.randint(0, dims[1]/2)
+            box[2] = random.randint(0, dims[0]/2)
+            box[3] = random.randint(dims[1]/2, dims[1])
+            box[4] = random.randint(dims[0]/2, dims[0])
+            box[5] = random.randint(dims[1]/2, dims[1])
+            box[6] = random.randint(dims[0]/2, dims[0])
+            box[7] = random.randint(0, dims[1]/2)
+        else:
+            box[0] = random.randint(0, dims[0])
+            box[1] = random.randint(0, dims[1])
+            box[2] = random.randint(0, dims[0])
+            box[3] = random.randint(0, dims[1])
+            box[4] = random.randint(0, dims[0])
+            box[5] = random.randint(0, dims[1])
+            box[6] = random.randint(0, dims[0])
+            box[7] = random.randint(0, dims[1])
         return box
         
     def tweakQuad(self, quad, max_tweak):
