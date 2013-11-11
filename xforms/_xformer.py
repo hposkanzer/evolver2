@@ -11,12 +11,15 @@ import ImageFont
 import os
 import string
 import sha  # Server runs on Python 2.4.
+import math
 
 import Image
 
 # It takes up a lot of disk space and doesn't improve performance that much.
 # It would allow me to show the product of every step of the transformation, though.
 cachingEnabled = False
+
+TWOPI = math.pi * 2
 
 
 class _Transformer(Picklable.Picklable):

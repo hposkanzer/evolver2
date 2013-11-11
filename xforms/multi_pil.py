@@ -3,6 +3,8 @@ Created on Aug 12, 2010
 
 @author: hmp@drzeus.best.vwh.net
 '''
+import math
+
 import _xformer
 import ImageChops
 import random
@@ -408,3 +410,43 @@ class MergeCMYK(_QuadrupleInput):
         return exs
     
 
+
+#############################################################################
+class BentleyMerge(_Combiner):    
+    
+    def __init__(self):
+        _Combiner.__init__(self)
+        self.tweakInner()
+
+    def getArgsString(self):
+        return "(%.2f, %.2f)" % (self.args["sigma"], self.args["angle"])
+
+    def transformInner(self, imgs):
+        ret = imgs[0].copy()
+        rload = ret.load()
+        iload0 = imgs[0].load()
+        iload1 = imgs[1].load()
+        sigma = self.args["sigma"]
+        angle = self.args["angle"]
+        dims = self.getDims()
+        for x in xrange(0, dims[0]):
+            for y in xrange(0, dims[1]):
+                m = round(sum(iload1[x,y])/765.0 * sigma)
+                mx = int(math.floor(math.cos(angle) * m))
+                my = int(math.floor(math.sin(angle) * m))
+                rload[x,y] = iload0[(x+mx)%dims[0], (y+my)%dims[1]]
+        return ret
+
+    def tweakInner(self):
+        self.args["sigma"] = random.uniform(10, 200)
+        self.args["angle"] = random.uniform(0, _xformer.TWOPI)
+
+    def getExamplesInner(self, imgs):
+        exs = []
+        for a in (0.0, math.pi/2):
+            for s in (10, 200):
+                self.args["sigma"] = s
+                self.args["angle"] = a
+                print "%s..." % (self)
+                exs.append(self.getExampleImage(imgs))
+        return exs

@@ -15,7 +15,6 @@ import ImageChops
 import ImageDraw
 import ImageStat
 
-TWOPI = math.pi * 2
 
 #############################################################################
 class Transpose(_xformer._MonoTransformer):
@@ -127,8 +126,8 @@ class Rotate(_xformer._MonoTransformer):
         img = img.rotate(self.args["angle"], Image.BILINEAR, 1)
         # We now want to zoom in on the largest rectangle fully within the rotated image.
         # The math here is way too hard.  We're just going to approximate it.
-        s = abs(math.sin(self.args["angle"]/360.0 * TWOPI))
-        c = abs(math.cos(self.args["angle"]/360.0 * TWOPI))
+        s = abs(math.sin(self.args["angle"]/360.0 * _xformer.TWOPI))
+        c = abs(math.cos(self.args["angle"]/360.0 * _xformer.TWOPI))
         (ow, oh) = self.getDims()
         w = ow - ((ow-oh) * s) - ((ow-oh) * s * c * 2)
         h = float(oh)/ow * w
@@ -991,7 +990,7 @@ class Fuzz(_xformer._MonoTransformer):
                 if (self.args["angle"] >= 0):
                     angle = self.args["angle"]
                 else:
-                    angle = random.uniform(0, TWOPI)
+                    angle = random.uniform(0, _xformer.TWOPI)
                 m = random.normalvariate(0, sigma)
                 #m = round(sum(iload[x,y])/765.0 * sigma)  # Bentley Effect
                 mx = int(math.floor(math.cos(angle) * m))
@@ -1004,7 +1003,7 @@ class Fuzz(_xformer._MonoTransformer):
         if (random.uniform(0, 1.0) <= self.randomModePct):
             self.args["angle"] = -1
         else:
-            self.args["angle"] = random.uniform(0, TWOPI)
+            self.args["angle"] = random.uniform(0, _xformer.TWOPI)
 
     def getExamplesInner(self, imgs):
         exs = []
