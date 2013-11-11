@@ -1,11 +1,12 @@
 try:
-    import Image, ImageDraw, ImageStat
+    import Image, ImageDraw, ImageStat, ImageFilter
 except ImportError, e:
 
     try:
         import PIL.Image as Image
         import PIL.ImageDraw as ImageDraw
         import PIL.ImageStat as ImageStat
+        import PIL.ImageFilter as ImageFilter
     except:
         raise
 except:
@@ -92,31 +93,20 @@ class Halftone(object):
                 dots.append(channel)
                 continue
             channel = channel.rotate(angle, expand=1)
+            t0 = time.time()
+            channel = channel.filter(ImageFilter.MedianFilter(5))
+            print "median %d: %.2f" % (angle, time.time() - t0)
             size = channel.size[0]*scale, channel.size[1]*scale
             half_tone = Image.new('L', size)
             draw = ImageDraw.Draw(half_tone)
             t0 = time.time()
-            cropt = 0.0
-            statt = 0.0
-            meant = 0.0
             for x in xrange(0, channel.size[0], sample):
                 for y in xrange(0, channel.size[1], sample):
-                    t1 = time.time()
-                    box = channel.crop((x, y, x + sample, y + sample))
-                    cropt = cropt + time.time() - t1
-                    t1 = time.time()
-                    stat = ImageStat.Stat(box)
-                    statt = statt + time.time() - t1
-                    t1 = time.time()
-                    diameter = (stat.mean[0] / 255)**0.5
-                    meant = meant + time.time() - t1
+                    diameter = (channel.getpixel((x, y)) / 255.0)**0.5
                     edge = 0.5*(1-diameter)
                     x_pos, y_pos = (x+edge)*scale, (y+edge)*scale
                     box_edge = sample*diameter*scale
                     draw.ellipse((x_pos, y_pos, x_pos + box_edge, y_pos + box_edge), fill=255)
-            print "crop: %.2f" % (cropt)
-            print "stat: %.2f" % (statt)
-            print "mean: %.2f" % (meant)
             print "draw %d: %.2f" % (angle, time.time() - t0)
             half_tone = half_tone.rotate(-angle, expand=1)
             width_half, height_half = half_tone.size
@@ -133,4 +123,4 @@ if __name__ == '__main__':
     path = sys.argv[1]
 
     h = Halftone(path)
-    h.make(filename_addition='_halftoned', sample=5, percentage=0.0)
+    h.make(filename_addition='_halftoned', sample=5, percentage=0)
