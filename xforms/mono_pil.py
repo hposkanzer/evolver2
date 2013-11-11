@@ -1015,3 +1015,43 @@ class Fuzz(_xformer._MonoTransformer):
                 exs.append(self.getExampleImage(imgs))
         return exs
     
+    
+
+#############################################################################
+class TV(_xformer._MonoTransformer):    
+    
+    randomModePct = 0.2
+
+    def __init__(self):
+        _xformer._MonoTransformer.__init__(self)
+        self.tweakInner()
+
+    def getArgsString(self):
+        return "(%d, %.2f)" % (self.args["rows"], self.args["dim"])
+
+    def transformImage(self, img):
+        ret = img.copy()
+        rload = ret.load()
+        rows = self.args["rows"]
+        dim = self.args["dim"]
+        dims = self.getDims()
+        for y in xrange(0, dims[1]):
+            if (y/rows) % 2 == 0:
+                for x in xrange(0, dims[0]):
+                    rload[x,y] = tuple(map(lambda x: int(round(x * dim)), rload[x,y]))
+        return ret
+
+    def tweakInner(self):
+        self.args["rows"] = random.randint(0, 2)
+        self.args["dim"] = random.uniform(0.0, 1.0)
+
+    def getExamplesInner(self, imgs):
+        exs = []
+        for r in (1, 2):
+            for d in (0.0, 0.5):
+                self.args["rows"] = r
+                self.args["dim"] = d
+                print "%s..." % (self)
+                exs.append(self.getExampleImage(imgs))
+        return exs
+        
