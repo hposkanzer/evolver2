@@ -91,3 +91,29 @@ class Sine(_xformer._MonoTransformer):
                     exs.append(self.getExampleImage(imgs))
         return exs
 
+
+class Dome(_xformer._MonoTransformer):
+    
+    maxAmplitude = 40
+    
+    def __init__(self):
+        _xformer._MonoTransformer.__init__(self)
+        self.tweakInner()
+
+    def getArgsString(self):
+        return "(%.2f)" % (self.args["amplitude"])
+
+    def transformImage(self, img):
+        d = _Distortions.DomeWarp(self.args["amplitude"])
+        return d.render(img)
+    
+    def tweakInner(self):
+        self.args["amplitude"] = random.uniform(0, self.maxAmplitude)
+        
+    def getExamplesInner(self, imgs):
+        exs = []
+        for a in (-100, -50, 50, 100):
+            self.args["amplitude"] = a
+            print "%s..." % (self)
+            exs.append(self.getExampleImage(imgs))
+        return exs
