@@ -1039,7 +1039,7 @@ class TV(_xformer._MonoTransformer):
         return ImageChops.multiply(img, overlay.convert("RGB"))
 
     def tweakInner(self):
-        self.args["rows"] = random.randint(0, 2)
+        self.args["rows"] = random.randint(1, 2)
         self.args["dim"] = random.uniform(0.0, 1.0)
 
     def getExamplesInner(self, imgs):
