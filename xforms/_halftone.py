@@ -55,6 +55,7 @@ class Halftone(object):
         cmyk = self.gcr(im, percentage)
         dots = self.halftone(im, percentage, cmyk, sample, scale, angles)
         new = Image.merge('CMYK', dots)
+        new = new.resize(im.size, Image.ANTIALIAS)
         new.save(outfile)
 
 
@@ -90,7 +91,9 @@ class Halftone(object):
         dots = []
         for channel, angle in zip(cmyk, angles):
             if not percentage and len(dots) == 3:
-                dots.append(channel)
+                size = channel.size[0]*scale, channel.size[1]*scale
+                half_tone = Image.new('L', size)
+                dots.append(half_tone)
                 continue
             channel = channel.rotate(angle, expand=1)
             t0 = time.time()
@@ -123,4 +126,4 @@ if __name__ == '__main__':
     path = sys.argv[1]
 
     h = Halftone(path)
-    h.make(filename_addition='_halftoned', sample=5, percentage=0)
+    h.make(filename_addition='_halftoned', sample=5, scale=2, percentage=0)
