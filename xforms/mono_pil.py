@@ -993,6 +993,7 @@ class Fuzz(_xformer._MonoTransformer):
                 else:
                     angle = random.uniform(0, TWOPI)
                 m = random.normalvariate(0, sigma)
+                #m = round(sum(iload[x,y])/765.0 * sigma)  # Bentley Effect
                 mx = int(math.floor(math.cos(angle) * m))
                 my = int(math.floor(math.sin(angle) * m))
                 rload[x,y] = iload[(x+mx)%dims[0], (y+my)%dims[1]]
