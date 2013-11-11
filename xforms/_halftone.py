@@ -12,6 +12,7 @@ except:
     raise
 
 import os, sys
+import time
 
 """
 Class: Halftone( path )
@@ -51,7 +52,7 @@ class Halftone(object):
             print "Cannot open ", self.path
 
         cmyk = self.gcr(im, percentage)
-        dots = self.halftone(im, cmyk, sample, scale, angles)
+        dots = self.halftone(im, percentage, cmyk, sample, scale, angles)
         new = Image.merge('CMYK', dots)
         new.save(outfile)
 
@@ -78,7 +79,7 @@ class Halftone(object):
         return Image.merge('CMYK', cmyk_im)
 
 
-    def halftone(self, im, cmyk, sample, scale, angles):
+    def halftone(self, im, percentage, cmyk, sample, scale, angles):
         '''Returns list of half-tone images for cmyk image. sample (pixels), 
            determines the sample box size from the original image. The maximum 
            output dot diameter is given by sample * scale (which is also the number 
@@ -87,19 +88,36 @@ class Halftone(object):
         cmyk = cmyk.split()
         dots = []
         for channel, angle in zip(cmyk, angles):
+            if not percentage and len(dots) == 3:
+                dots.append(channel)
+                continue
             channel = channel.rotate(angle, expand=1)
             size = channel.size[0]*scale, channel.size[1]*scale
             half_tone = Image.new('L', size)
             draw = ImageDraw.Draw(half_tone)
+            t0 = time.time()
+            cropt = 0.0
+            statt = 0.0
+            meant = 0.0
             for x in xrange(0, channel.size[0], sample):
                 for y in xrange(0, channel.size[1], sample):
+                    t1 = time.time()
                     box = channel.crop((x, y, x + sample, y + sample))
+                    cropt = cropt + time.time() - t1
+                    t1 = time.time()
                     stat = ImageStat.Stat(box)
+                    statt = statt + time.time() - t1
+                    t1 = time.time()
                     diameter = (stat.mean[0] / 255)**0.5
+                    meant = meant + time.time() - t1
                     edge = 0.5*(1-diameter)
                     x_pos, y_pos = (x+edge)*scale, (y+edge)*scale
                     box_edge = sample*diameter*scale
                     draw.ellipse((x_pos, y_pos, x_pos + box_edge, y_pos + box_edge), fill=255)
+            print "crop: %.2f" % (cropt)
+            print "stat: %.2f" % (statt)
+            print "mean: %.2f" % (meant)
+            print "draw %d: %.2f" % (angle, time.time() - t0)
             half_tone = half_tone.rotate(-angle, expand=1)
             width_half, height_half = half_tone.size
             xx=(width_half-im.size[0]*scale) / 2
@@ -115,4 +133,4 @@ if __name__ == '__main__':
     path = sys.argv[1]
 
     h = Halftone(path)
-    h.make(filename_addition='_halftoned')
+    h.make(filename_addition='_halftoned', sample=5, percentage=0.0)
