@@ -1030,16 +1030,13 @@ class TV(_xformer._MonoTransformer):
         return "(%d, %.2f)" % (self.args["rows"], self.args["dim"])
 
     def transformImage(self, img):
-        ret = img.copy()
-        rload = ret.load()
+        dims = self.getDims()
         rows = self.args["rows"]
         dim = self.args["dim"]
-        dims = self.getDims()
-        for y in xrange(0, dims[1]):
-            if (y/rows) % 2 == 0:
-                for x in xrange(0, dims[0]):
-                    rload[x,y] = tuple(map(lambda x: int(round(x * dim)), rload[x,y]))
-        return ret
+        overlay = Image.new("L", dims, "white")
+        for i in range(0, dims[1], rows*2):
+            overlay.paste(255 * dim, (0,i,dims[0],i+rows))
+        return ImageChops.multiply(img, overlay.convert("RGB"))
 
     def tweakInner(self):
         self.args["rows"] = random.randint(0, 2)
