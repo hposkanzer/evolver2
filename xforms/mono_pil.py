@@ -966,3 +966,52 @@ class Dots(_xformer._MonoTransformer):
         return exs
 
 
+
+#############################################################################
+class Fuzz(_xformer._MonoTransformer):    
+    
+    randomModePct = 0.2
+
+    def __init__(self):
+        _xformer._MonoTransformer.__init__(self)
+        self.tweakInner()
+
+    def getArgsString(self):
+        return "(%.2f, %.2f)" % (self.args["sigma"], self.args["angle"])
+
+    def transformImage(self, img):
+        ret = img.copy()
+        rload = ret.load()
+        iload = img.load()
+        sigma = self.args["sigma"]
+        angle = self.args["angle"]
+        dims = self.getDims()
+        for x in xrange(0, dims[0]):
+            for y in xrange(0, dims[1]):
+                if (angle >= 0):
+                    m = random.normalvariate(0, sigma)
+                    mx = int(math.floor(math.cos(angle) * m))
+                    my = int(math.floor(math.sin(angle) * m))
+                else:
+                    mx = int(math.floor(random.normalvariate(0, sigma)))
+                    my = int(math.floor(random.normalvariate(0, sigma)))
+                rload[x,y] = iload[(x+mx)%dims[0], (y+my)%dims[1]]
+        return ret
+
+    def tweakInner(self):
+        self.args["sigma"] = random.uniform(0, 10)
+        if (random.uniform(0, 1.0) <= self.randomModePct):
+            self.args["angle"] = -1
+        else:
+            self.args["angle"] = random.uniform(0, math.pi * 2)
+
+    def getExamplesInner(self, imgs):
+        exs = []
+        for a in (-1, 0.0, math.pi/2):
+            for s in (1, 10):
+                self.args["sigma"] = s
+                self.args["angle"] = a
+                print "%s..." % (self)
+                exs.append(self.getExampleImage(imgs))
+        return exs
+    
