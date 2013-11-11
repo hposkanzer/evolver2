@@ -15,6 +15,7 @@ import ImageChops
 import ImageDraw
 import ImageStat
 
+TWOPI = math.pi * 2
 
 #############################################################################
 class Transpose(_xformer._MonoTransformer):
@@ -126,8 +127,8 @@ class Rotate(_xformer._MonoTransformer):
         img = img.rotate(self.args["angle"], Image.BILINEAR, 1)
         # We now want to zoom in on the largest rectangle fully within the rotated image.
         # The math here is way too hard.  We're just going to approximate it.
-        s = abs(math.sin(self.args["angle"]/360.0 * 2 * math.pi))
-        c = abs(math.cos(self.args["angle"]/360.0 * 2 * math.pi))
+        s = abs(math.sin(self.args["angle"]/360.0 * TWOPI))
+        c = abs(math.cos(self.args["angle"]/360.0 * TWOPI))
         (ow, oh) = self.getDims()
         w = ow - ((ow-oh) * s) - ((ow-oh) * s * c * 2)
         h = float(oh)/ow * w
@@ -984,17 +985,16 @@ class Fuzz(_xformer._MonoTransformer):
         rload = ret.load()
         iload = img.load()
         sigma = self.args["sigma"]
-        angle = self.args["angle"]
         dims = self.getDims()
         for x in xrange(0, dims[0]):
             for y in xrange(0, dims[1]):
-                if (angle >= 0):
-                    m = random.normalvariate(0, sigma)
-                    mx = int(math.floor(math.cos(angle) * m))
-                    my = int(math.floor(math.sin(angle) * m))
+                if (self.args["angle"] >= 0):
+                    angle = self.args["angle"]
                 else:
-                    mx = int(math.floor(random.normalvariate(0, sigma)))
-                    my = int(math.floor(random.normalvariate(0, sigma)))
+                    angle = random.uniform(0, TWOPI)
+                m = random.normalvariate(0, sigma)
+                mx = int(math.floor(math.cos(angle) * m))
+                my = int(math.floor(math.sin(angle) * m))
                 rload[x,y] = iload[(x+mx)%dims[0], (y+my)%dims[1]]
         return ret
 
@@ -1003,7 +1003,7 @@ class Fuzz(_xformer._MonoTransformer):
         if (random.uniform(0, 1.0) <= self.randomModePct):
             self.args["angle"] = -1
         else:
-            self.args["angle"] = random.uniform(0, math.pi * 2)
+            self.args["angle"] = random.uniform(0, TWOPI)
 
     def getExamplesInner(self, imgs):
         exs = []
