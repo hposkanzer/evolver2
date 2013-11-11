@@ -450,3 +450,55 @@ class BentleyMerge(_Combiner):
                 print "%s..." % (self)
                 exs.append(self.getExampleImage(imgs))
         return exs
+    
+    
+
+#############################################################################
+class Strips(_Combiner):    
+    
+    dirs = ["H", "V"]
+    
+    def __init__(self):
+        _Combiner.__init__(self)
+
+    def addInput(self, xform):
+        _Combiner.addInput(self, xform)
+        self.tweakInner()
+
+    def getArgsString(self):
+        return "(%d, %s)" % (self.args["rows"], self.args["dir"])
+
+    def transformInner(self, imgs):
+        ret = imgs[0].copy()
+        dims = self.getDims()
+        rows = self.args["rows"]
+        if self.args["dir"] == "H":
+            for i in range(0, dims[1], rows*2):
+                coords = (0,i,dims[0],i+rows)
+                ret.paste(imgs[1].crop(coords), coords)
+        else:
+            for i in range(0, dims[0], rows*2):
+                coords = (i,0,i+rows,dims[1])
+                ret.paste(imgs[1].crop(coords), coords)
+        return ret
+
+    def tweakInner(self):
+        self.args["dir"] = random.choice(self.dirs)
+        self.args["rows"] = random.randint(1, self.getMaxRows())
+
+    def getMaxRows(self):
+        if self.args["dir"] == "H":
+            maxRows = self.getDims()[1]
+        else:
+            maxRows = self.getDims()[0]
+        return int(round(maxRows/4.0))
+    
+    def getExamplesInner(self, imgs):
+        exs = []
+        for d in self.dirs:
+            self.args["dir"] = d
+            for r in (1, 10, self.getMaxRows()):
+                self.args["rows"] = r
+                print "%s..." % (self)
+                exs.append(self.getExampleImage(imgs))
+        return exs    
