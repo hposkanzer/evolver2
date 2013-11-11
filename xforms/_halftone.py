@@ -1,19 +1,17 @@
 try:
-    import Image, ImageDraw, ImageStat, ImageFilter
+    import Image, ImageDraw, ImageFilter
 except ImportError, e:
 
     try:
         import PIL.Image as Image
         import PIL.ImageDraw as ImageDraw
-        import PIL.ImageStat as ImageStat
         import PIL.ImageFilter as ImageFilter
     except:
         raise
 except:
     raise
 
-import os, sys
-import time
+import os
 
 """
 Class: Halftone( path )
@@ -27,13 +25,16 @@ http://stackoverflow.com/a/10575940/250962
 """
 
 class Halftone(object):
+    
+    default_angles=[0,15,30,45]
+    
     def __init__(self, path):
         """
         path is the path to the image we want to halftone.
         """
         self.path = path
 
-    def make(self, sample=10, scale=1, percentage=0, filename_addition='', angles=[0,15,30,45]):
+    def make(self, sample=10, scale=1, percentage=0, filename_addition='', angles=None):
         """
         Leave filename_addition empty to save the image in place.
         Arguments:
@@ -51,6 +52,9 @@ class Halftone(object):
             im = Image.open(self.path)
         except IOError:
             print "Cannot open ", self.path
+            
+        if not angles:
+            angles = self.default_angles
 
         cmyk = self.gcr(im, percentage)
         dots = self.halftone(im, percentage, cmyk, sample, scale, angles)
@@ -96,13 +100,10 @@ class Halftone(object):
                 dots.append(half_tone)
                 continue
             channel = channel.rotate(angle, expand=1)
-            t0 = time.time()
             channel = channel.filter(ImageFilter.MedianFilter(5))
-            print "median %d: %.2f" % (angle, time.time() - t0)
             size = channel.size[0]*scale, channel.size[1]*scale
             half_tone = Image.new('L', size)
             draw = ImageDraw.Draw(half_tone)
-            t0 = time.time()
             for x in xrange(0, channel.size[0], sample):
                 for y in xrange(0, channel.size[1], sample):
                     diameter = (channel.getpixel((x, y)) / 255.0)**0.5
@@ -110,7 +111,6 @@ class Halftone(object):
                     x_pos, y_pos = (x+edge)*scale, (y+edge)*scale
                     box_edge = sample*diameter*scale
                     draw.ellipse((x_pos, y_pos, x_pos + box_edge, y_pos + box_edge), fill=255)
-            print "draw %d: %.2f" % (angle, time.time() - t0)
             half_tone = half_tone.rotate(-angle, expand=1)
             width_half, height_half = half_tone.size
             xx=(width_half-im.size[0]*scale) / 2
