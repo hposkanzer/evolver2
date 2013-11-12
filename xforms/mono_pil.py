@@ -966,49 +966,61 @@ class Dots(_xformer._MonoTransformer):
 #############################################################################
 class Fuzz(_xformer._MonoTransformer):    
     
-    randomModePct = 0.2
+    modes = ["RANDOM", "OUT", "ANGLE"]
 
     def __init__(self):
         _xformer._MonoTransformer.__init__(self)
         self.tweakInner()
 
     def getArgsString(self):
-        return "(%.2f, %.2f)" % (self.args["sigma"], self.args["angle"])
+        if (self.args["mode"] == "ANGLE"):
+            return "(%s, %.2f, %.2f)" % (self.args["mode"], self.args["sigma"], self.args["angle"])
+        else:
+            return "(%s, %.2f)" % (self.args["mode"], self.args["sigma"])
+            
 
     def transformImage(self, img):
         ret = img.copy()
         rload = ret.load()
         iload = img.load()
+        mode = self.args.get("mode")
         sigma = self.args["sigma"]
         dims = self.getDims()
         for x in xrange(0, dims[0]):
             for y in xrange(0, dims[1]):
-                if (self.args["angle"] >= 0):
+                if (mode == "ANGLE"):
                     angle = self.args["angle"]
+                elif (mode == "OUT"):
+                    if ((x - dims[0]/2.0) == 0):
+                        continue
+                    angle = math.atan((y - dims[1]/2.0)/(x - dims[0]/2.0))
                 else:
                     angle = random.uniform(0, _xformer.TWOPI)
                 m = random.normalvariate(0, sigma)
-                #m = round(sum(iload[x,y])/765.0 * sigma)  # Bentley Effect
                 mx = int(math.floor(math.cos(angle) * m))
                 my = int(math.floor(math.sin(angle) * m))
                 rload[x,y] = iload[(x+mx)%dims[0], (y+my)%dims[1]]
         return ret
 
     def tweakInner(self):
+        self.args["mode"] = random.choice(self.modes)
         self.args["sigma"] = random.uniform(0, 10)
-        if (random.uniform(0, 1.0) <= self.randomModePct):
-            self.args["angle"] = -1
-        else:
-            self.args["angle"] = random.uniform(0, _xformer.TWOPI)
+        self.args["angle"] = random.uniform(0, _xformer.TWOPI)
 
     def getExamplesInner(self, imgs):
         exs = []
-        for a in (-1, 0.0, math.pi/2):
-            for s in (1, 10):
+        for m in self.modes:
+            for s in (2, 10):
+                self.args["mode"] = m
                 self.args["sigma"] = s
-                self.args["angle"] = a
-                print "%s..." % (self)
-                exs.append(self.getExampleImage(imgs))
+                if (m == "ANGLE"):
+                    for a in [0.0, math.pi/2]:
+                        self.args["angle"] = a
+                        print "%s..." % (self)
+                        exs.append(self.getExampleImage(imgs))
+                else:
+                    print "%s..." % (self)
+                    exs.append(self.getExampleImage(imgs))
         return exs
     
     
