@@ -125,24 +125,22 @@ class DomeWarp(WarpBase):
 
     def __init__(self,
                  amplitude,
+                 wavelength
                  ):
         self.amplitude = amplitude
+        self.wavelength = wavelength
 
     def getTransform(self, image):
-        self.max_distance = min(image.size[0], image.size[1])/2.0
         self.halfdims = (image.size[0]/2.0, image.size[1]/2.0)
         return self.transform
         
     def transform(self, x, y):
         a = self.amplitude
         h = self.halfdims
-        m = self.max_distance
+        w = self.wavelength
         d = math.hypot(x - h[0], y - h[1])
-        if (d > m):
-            return (x, y)
-        else:
-            return (x - a * math.sin(math.pi * (x - h[0]) / m) * abs(math.sin(math.pi * d / m)),
-                    y - a * math.cos(math.pi * (y - h[0]) / m) * abs(math.sin(math.pi * d / m)))
+        return (x - a * math.sin(math.pi * (x - h[0]) / w) * abs(math.sin(math.pi * d / w)),
+                y - a * math.cos(math.pi * (y - h[0]) / w) * abs(math.sin(math.pi * d / w)))
         
 
 ### The End ###

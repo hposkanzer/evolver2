@@ -92,28 +92,35 @@ class Sine(_xformer._MonoTransformer):
         return exs
 
 
-class Dome(_xformer._MonoTransformer):
-    
-    maxAmplitude = 40
+class Wave(_xformer._MonoTransformer):
     
     def __init__(self):
         _xformer._MonoTransformer.__init__(self)
-        self.tweakInner()
 
     def getArgsString(self):
-        return "(%.2f)" % (self.args["amplitude"])
+        return "(%.2f, %.2f)" % (self.args["wavelength"], self.args["amplitude"])
+
+    def addInput(self, xform):
+        _xformer._MonoTransformer.addInput(self, xform)
+        self.tweakInner()
 
     def transformImage(self, img):
-        d = _Distortions.DomeWarp(self.args["amplitude"])
+        d = _Distortions.DomeWarp(self.args["amplitude"], self.args["wavelength"])
         return d.render(img)
     
     def tweakInner(self):
-        self.args["amplitude"] = random.uniform(0, self.maxAmplitude)
+        self.args["wavelength"] = random.uniform(30, min(self.getDims())/2.0)
+        self.args["amplitude"] = random.uniform(-self.getMaxAmplitude(), self.getMaxAmplitude())
+        
+    def getMaxAmplitude(self):
+        return self.args["wavelength"]/4.0
         
     def getExamplesInner(self, imgs):
         exs = []
-        for a in (-100, -50, 50, 100):
-            self.args["amplitude"] = a
-            print "%s..." % (self)
-            exs.append(self.getExampleImage(imgs))
+        for w in (30, 150, 300):
+            self.args["wavelength"] = w
+            for a in (-self.getMaxAmplitude(), self.getMaxAmplitude()):
+                self.args["amplitude"] = a
+                print "%s..." % (self)
+                exs.append(self.getExampleImage(imgs))
         return exs
