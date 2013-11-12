@@ -14,7 +14,6 @@ import ImageOps
 import ImageEnhance
 import ImageChops
 import ImageDraw
-import ImageStat
 import ImageFont
 import Location
 
@@ -935,18 +934,17 @@ class Dots(_xformer._MonoTransformer):
         ret = Image.new('RGB', self.getDims())
         draw = ImageDraw.Draw(ret)
         sample = self.args["sample"]
+        values = img.filter(ImageFilter.MedianFilter(5))
         for x in xrange(0, self.getDims()[0], sample):
             for y in xrange(0, self.getDims()[1], sample):
-                box = img.crop((x, y, x + sample, y + sample))
-                stat = ImageStat.Stat(box)
                 if (self.args["mode"] == "SCALE"):
-                    diameter = (sum(stat.mean) / (255 * 3))**0.5
+                    diameter = (sum(values.getpixel((x,y))) / (255.0 * 3))**0.5
                 else:
                     diameter = 0.9
                 edge = 0.5*(1-diameter)*sample
                 x_pos, y_pos = (x+edge), (y+edge)
                 box_edge = sample*diameter
-                draw.ellipse((x_pos, y_pos, x_pos + box_edge, y_pos + box_edge), fill=tuple(map(int, stat.mean)))
+                draw.ellipse((x_pos, y_pos, x_pos + box_edge, y_pos + box_edge), fill=values.getpixel((x,y)))
         return ret
 
     def tweakInner(self):
