@@ -1061,35 +1061,51 @@ class ASCII(_xformer._MonoTransformer):
     chars1 = ['#', '@', '$', '=', '*', '!', ';', ':', '~', '-', ',', '.', ' ']
     chars2 = ["#", "A", "@", "M",  "$", "0", "e", "a", "o", "=", "+", ";", ":", ",", ".", " "]
     charsets = [chars1, chars2]
-    
+    modes = ["L", "RGB"]
+
     def __init__(self):
         _xformer._MonoTransformer.__init__(self)
         self.tweakInner()
 
     def getArgsString(self):
-        return "(%d)" % (self.charsets.index(self.args["charset"]))
+        return "(%d, %s)" % (self.charsets.index(self.args["charset"]), self.args["mode"])
 
     def transformImage(self, img):
         dims = self.getDims()
-        ret = Image.new("L", dims, "white")
+        ret = Image.new("RGB", dims, "white")
         draw = ImageDraw.Draw(ret)
         font = ImageFont.load(os.path.join("fonts", "courR08.pil"))
         (w,h) = draw.textsize(self.args["charset"][-1], font)
-        values = img.convert("L").filter(ImageFilter.MedianFilter(5))
+        if self.args["mode"] == "L":
+            # Convert to grayscale
+            values = img.convert("L")
+        else:
+            # Saturate the color
+            values = ImageEnhance.Color(img).enhance(2.0)
+        values = values.filter(ImageFilter.MedianFilter(5))
         for y in range(0, dims[1], h):
             for x in range(0, dims[0], w):
                 v = values.getpixel((x,y))
-                vi = int(round(float(v)/255 * (len(self.args["charset"])-1)))
-                draw.text((x,y), self.args["charset"][vi], font=font, fill=0)
-        return ret.convert("RGB")
+                if self.args["mode"] == "L":
+                    pct =  v/255.0
+                    fill = (0, 0, 0)
+                else:
+                    pct = sum(v)/765.0
+                    fill = v
+                vi = int(round(pct * (len(self.args["charset"])-1)))
+                draw.text((x,y), self.args["charset"][vi], font=font, fill=fill)
+        return ret
 
     def tweakInner(self):
         self.args["charset"] = random.choice(self.charsets)
+        self.args["mode"] = random.choice(self.modes)
 
     def getExamplesInner(self, imgs):
         exs = []
-        for charset in self.charsets:
-            self.args["charset"]  = charset
-            print "%s..." % (self)
-            exs.append(self.getExampleImage(imgs))
+        for mode in self.modes:
+            for charset in self.charsets:
+                self.args["mode"] = mode
+                self.args["charset"]  = charset
+                print "%s..." % (self)
+                exs.append(self.getExampleImage(imgs))
         return exs
