@@ -28,7 +28,6 @@ class Speckle(_xformer._MonoTransformer):
             return "(%s, %d, %.2f)" % (self.args["mode"], self.args["blockSize"], self.args["sigma"])
 
     def transformImage(self, img):
-        ret = img.copy()
         if (self.args["mode"] == "ANGLE"):
             angle = self.args["angle"]
         elif (self.args["mode"] == "RANDOM"):
@@ -36,8 +35,7 @@ class Speckle(_xformer._MonoTransformer):
         else:
             angle = -2
         d = _Distortions.WigglyBlocks(self.args["blockSize"], self.args["sigma"], angle, self.args["iters"])
-        d.render(ret)
-        return ret
+        return d.render(img)
     
     def tweakInner(self):
         self.args["mode"] = random.choice(self.modes)
@@ -67,7 +65,7 @@ class Speckle(_xformer._MonoTransformer):
     
     def getIterations(self):
         # From 10000 down to 1000
-        return -180 * self.args["blockSize"] + 10000
+        return -180 * self.args["blockSize"] + 20000
 
 
 class Sine(_xformer._MonoTransformer):

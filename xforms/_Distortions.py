@@ -21,6 +21,7 @@ class WigglyBlocks:
         self.seed = random.random()
 
     def render(self, image):
+        ret = image.copy()
         r = random.Random(self.seed)
         for i in xrange(self.iterations):
             # Select a block
@@ -39,15 +40,19 @@ class WigglyBlocks:
                 mx = int(math.floor(r.normalvariate(0, self.sigma)))
                 my = int(math.floor(r.normalvariate(0, self.sigma)))
             else:
-                m = r.normalvariate(0, self.sigma)
+                m = abs(r.normalvariate(0, self.sigma))
                 if ((bx - image.size[0]/2.0) == 0):
                     continue
                 angle = math.atan((by - image.size[1]/2.0)/(bx - image.size[0]/2.0))
                 mx = int(math.floor(math.cos(angle) * m))
                 my = int(math.floor(math.sin(angle) * m))
+                if (bx < image.size[0]/2.0):
+                    mx = -mx
+                    my = -my
 
             # Now actually move the block
-            image.paste(block, (bx+mx, by+my))
+            ret.paste(block, (bx+mx, by+my))
+        return ret
 
 
 class WarpBase:
