@@ -1063,19 +1063,21 @@ class ASCII(_xformer._MonoTransformer):
     chars2 = ["#", "A", "@", "M",  "$", "0", "e", "a", "o", "=", "+", ";", ":", ",", ".", " "]
     charsets = [chars1, chars2]
     modes = ["L", "RGB"]
+    fonts = ["08", "10", "12", "14"]
 
     def __init__(self):
         _xformer._MonoTransformer.__init__(self)
         self.tweakInner()
 
     def getArgsString(self):
-        return "(%d, %s)" % (self.charsets.index(self.args["charset"]), self.args["mode"])
+        return "(%s, %d, %s)" % (self.args["font"], self.charsets.index(self.args["charset"]), self.args["mode"])
 
     def transformImage(self, img):
         dims = self.getDims()
         ret = Image.new("RGB", dims, "white")
         draw = ImageDraw.Draw(ret)
-        path= Location.getInstance().toAbsolutePath(os.path.join("fonts", "courR08.pil"))
+        font = "courR" + self.args["font"] + ".pil"
+        path= Location.getInstance().toAbsolutePath(os.path.join("fonts", font))
         font = ImageFont.load(path)
         (w,h) = draw.textsize(self.args["charset"][-1], font)
         if self.args["mode"] == "L":
@@ -1099,15 +1101,18 @@ class ASCII(_xformer._MonoTransformer):
         return ret
 
     def tweakInner(self):
+        self.args["font"] = random.choice(self.fonts)
         self.args["charset"] = random.choice(self.charsets)
         self.args["mode"] = random.choice(self.modes)
 
     def getExamplesInner(self, imgs):
         exs = []
-        for mode in self.modes:
-            for charset in self.charsets:
-                self.args["mode"] = mode
-                self.args["charset"]  = charset
-                print "%s..." % (self)
-                exs.append(self.getExampleImage(imgs))
+        for font in [self.fonts[0], self.fonts[-1]]:
+            for mode in self.modes:
+                for charset in self.charsets:
+                    self.args["font"] = font
+                    self.args["mode"] = mode
+                    self.args["charset"]  = charset
+                    print "%s..." % (self)
+                    exs.append(self.getExampleImage(imgs))
         return exs
