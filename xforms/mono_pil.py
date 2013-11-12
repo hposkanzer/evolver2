@@ -3,6 +3,7 @@ Created on Aug 5, 2010
 
 @author: hmp@drzeus.best.vwh.net
 '''
+import os
 import string
 import math
 import _xformer
@@ -14,6 +15,7 @@ import ImageEnhance
 import ImageChops
 import ImageDraw
 import ImageStat
+import ImageFont
 
 
 #############################################################################
@@ -1052,3 +1054,42 @@ class TV(_xformer._MonoTransformer):
                 exs.append(self.getExampleImage(imgs))
         return exs
         
+
+#############################################################################
+class ASCII(_xformer._MonoTransformer):    
+    
+    chars1 = ['#', '@', '$', '=', '*', '!', ';', ':', '~', '-', ',', '.', ' ']
+    chars2 = ["#", "A", "@", "M",  "$", "0", "e", "a", "o", "=", "+", ";", ":", ",", ".", " "]
+    charsets = [chars1, chars2]
+    
+    def __init__(self):
+        _xformer._MonoTransformer.__init__(self)
+        self.tweakInner()
+
+    def getArgsString(self):
+        return "(%d)" % (self.charsets.index(self.args["charset"]))
+
+    def transformImage(self, img):
+        dims = self.getDims()
+        ret = Image.new("L", dims, "white")
+        draw = ImageDraw.Draw(ret)
+        font = ImageFont.load(os.path.join("fonts", "courR08.pil"))
+        (w,h) = draw.textsize(self.args["charset"][-1], font)
+        values = img.convert("L").filter(ImageFilter.MedianFilter(5))
+        for y in range(0, dims[1], h):
+            for x in range(0, dims[0], w):
+                v = values.getpixel((x,y))
+                vi = int(round(float(v)/255 * (len(self.args["charset"])-1)))
+                draw.text((x,y), self.args["charset"][vi], font=font, fill=0)
+        return ret.convert("RGB")
+
+    def tweakInner(self):
+        self.args["charset"] = random.choice(self.charsets)
+
+    def getExamplesInner(self, imgs):
+        exs = []
+        for charset in self.charsets:
+            self.args["charset"]  = charset
+            print "%s..." % (self)
+            exs.append(self.getExampleImage(imgs))
+        return exs
