@@ -15,41 +15,54 @@ import _Distortions
 class Speckle(_xformer._MonoTransformer):
     
     maxBlockSize = 50
-    randomModePct = 0.2
+    modes = ["RANDOM", "OUT", "ANGLE"]
     
     def __init__(self):
         _xformer._MonoTransformer.__init__(self)
         self.tweakInner()
 
     def getArgsString(self):
-        return "(%s, %.2f, %.2f)" % (self.args["blockSize"], self.args["sigma"], self.args["angle"])
+        if (self.args["mode"] == "ANGLE"):
+            return "(%s, %d, %.2f, %.2f)" % (self.args["mode"], self.args["blockSize"], self.args["sigma"], self.args["angle"])
+        else:
+            return "(%s, %d, %.2f)" % (self.args["mode"], self.args["blockSize"], self.args["sigma"])
 
     def transformImage(self, img):
         ret = img.copy()
-        d = _Distortions.WigglyBlocks(self.args["blockSize"], self.args["sigma"], self.args["angle"], self.args["iters"])
+        if (self.args["mode"] == "ANGLE"):
+            angle = self.args["angle"]
+        elif (self.args["mode"] == "RANDOM"):
+            angle = -1
+        else:
+            angle = -2
+        d = _Distortions.WigglyBlocks(self.args["blockSize"], self.args["sigma"], angle, self.args["iters"])
         d.render(ret)
         return ret
     
     def tweakInner(self):
+        self.args["mode"] = random.choice(self.modes)
         self.args["blockSize"] = random.randint(0, self.maxBlockSize)
         self.args["sigma"] = random.uniform(0, 10)
-        if (random.uniform(0, 1.0) <= self.randomModePct):
-            self.args["angle"] = -1
-        else:
-            self.args["angle"] = random.uniform(0, math.pi * 2)
+        self.args["angle"] = random.uniform(0, math.pi * 2)
         self.args["iters"] = self.getIterations()
         
     def getExamplesInner(self, imgs):
         exs = []
-        for a in (-1, 0.0, math.pi/2):
+        for m in self.modes:
             for b in (10, 50):
-                for s in (0.1, 10):
+                for s in (2, 10):
+                    self.args["mode"] = m
                     self.args["blockSize"] = b
                     self.args["sigma"] = s
-                    self.args["angle"] = a
                     self.args["iters"] = self.getIterations()
-                    print "%s..." % (self)
-                    exs.append(self.getExampleImage(imgs))
+                    if (m == "ANGLE"):
+                        for a in [0.0, math.pi/2]:
+                            self.args["angle"] = a
+                            print "%s..." % (self)
+                            exs.append(self.getExampleImage(imgs))
+                    else:
+                        print "%s..." % (self)
+                        exs.append(self.getExampleImage(imgs))
         return exs
     
     def getIterations(self):

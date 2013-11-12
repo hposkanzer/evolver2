@@ -35,9 +35,16 @@ class WigglyBlocks:
                 m = r.normalvariate(0, self.sigma)
                 mx = int(math.floor(math.cos(self.angle) * m))
                 my = int(math.floor(math.sin(self.angle) * m))
-            else:
+            elif (self.angle == -1):
                 mx = int(math.floor(r.normalvariate(0, self.sigma)))
                 my = int(math.floor(r.normalvariate(0, self.sigma)))
+            else:
+                m = r.normalvariate(0, self.sigma)
+                if ((bx - image.size[0]/2.0) == 0):
+                    continue
+                angle = math.atan((by - image.size[1]/2.0)/(bx - image.size[0]/2.0))
+                mx = int(math.floor(math.cos(angle) * m))
+                my = int(math.floor(math.sin(angle) * m))
 
             # Now actually move the block
             image.paste(block, (bx+mx, by+my))
