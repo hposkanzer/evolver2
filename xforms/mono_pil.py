@@ -887,7 +887,7 @@ class _Enhancer(_xformer._MonoTransformer):
     
     enhancer = None
     min_factor = 0.0
-    max_factor = 1.0
+    max_factor = 4.0
 
     def __init__(self):
         _xformer._MonoTransformer.__init__(self)
@@ -905,23 +905,18 @@ class _Enhancer(_xformer._MonoTransformer):
     def getExamplesInner(self, imgs):
         exs = []
         factor = 0.2
-        while (factor <= self.max_factor):
+        for i in range(3):
             self.args["factor"] = factor
             print "%s..." % (self)
             exs.append(self.getExampleImage(imgs))
-            factor = factor + (self.max_factor - self.min_factor)/3.0
+            factor = factor + (self.max_factor - self.min_factor - 0.4)/2.0
         return exs
 
 
 class ColorEnhancer(_Enhancer):  enhancer = ImageEnhance.Color
 class BrightnessEnhancer(_Enhancer):  enhancer = ImageEnhance.Brightness
 class ContrastEnhancer(_Enhancer):  enhancer = ImageEnhance.Contrast
-
-class SharpnessEnhancer(_Enhancer):  
-
-    enhancer = ImageEnhance.Sharpness
-    min_factor = 0.0
-    max_factor = 2.0
+class SharpnessEnhancer(_Enhancer):  enhancer = ImageEnhance.Sharpness
 
 
 #############################################################################
