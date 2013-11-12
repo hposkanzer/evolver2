@@ -16,6 +16,7 @@ import ImageChops
 import ImageDraw
 import ImageStat
 import ImageFont
+import Location
 
 
 #############################################################################
@@ -1074,7 +1075,8 @@ class ASCII(_xformer._MonoTransformer):
         dims = self.getDims()
         ret = Image.new("RGB", dims, "white")
         draw = ImageDraw.Draw(ret)
-        font = ImageFont.load(os.path.join("fonts", "courR08.pil"))
+        path= Location.getInstance().toAbsolutePath(os.path.join("fonts", "courR08.pil"))
+        font = ImageFont.load(path)
         (w,h) = draw.textsize(self.args["charset"][-1], font)
         if self.args["mode"] == "L":
             # Convert to grayscale
