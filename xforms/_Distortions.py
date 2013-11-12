@@ -51,16 +51,26 @@ class WarpBase():
        """
     filtering = Image.BILINEAR
     resolution = 10
+    debug = False
 
     def getTransform(self, image):
         """Return a transformation function, subclasses should override this"""
         return lambda x, y: (x, y)
 
     def render(self, image):
+        
         r = self.resolution
         xPoints = image.size[0] / r + 2
         yPoints = image.size[1] / r + 2
         f = self.getTransform(image)
+        
+        # Overlay a grid
+        if self.debug:
+            draw = ImageDraw.Draw(image)
+            for i in xrange(xPoints):
+                draw.line((i*r,0,i*r,image.size[1]), (255,0,0))
+            for i in xrange(yPoints):
+                draw.line((0,i*r,image.size[0],i*r), (255,0,0))
 
         # Create a list of arrays with transformed points
         xRows = []
