@@ -11,7 +11,7 @@ import ImageDraw, Image
 import random, math
 
 
-class WigglyBlocks():
+class WigglyBlocks:
     """Randomly select and shift blocks of the image"""
     def __init__(self, blockSize=16, sigma=0.01, angle=-1, iterations=300):
         self.blockSize = blockSize
@@ -43,7 +43,7 @@ class WigglyBlocks():
             image.paste(block, (bx+mx, by+my))
 
 
-class WarpBase():
+class WarpBase:
     """Abstract base class for image warping. Subclasses define a
        function that maps points in the output image to points in the input image.
        This warping engine runs a grid of points through this transform and uses
