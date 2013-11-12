@@ -1085,7 +1085,7 @@ class ASCII(_xformer._MonoTransformer):
             values = img.convert("L")
         else:
             # Saturate the color
-            values = ImageEnhance.Color(img).enhance(2.0)
+            values = ImageEnhance.Color(img).enhance(4.0)
         values = values.filter(ImageFilter.MedianFilter(5))
         for y in range(0, dims[1], h):
             for x in range(0, dims[0], w):
