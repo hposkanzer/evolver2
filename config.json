@@ -5,7 +5,7 @@
   "progeny": 5, 
   "tweak_rate": 0.8, 
   "img_width": 800, 
-  "max_depth": 8, 
+  "max_depth": 7, 
   "min_depth": 2, 
   "start": 5, 
   "img_height": 600, 
