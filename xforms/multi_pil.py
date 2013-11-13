@@ -7,6 +7,7 @@ import math
 
 import _xformer
 import ImageChops
+import ImageDraw
 import random
 import Image
 
@@ -414,6 +415,8 @@ class MergeCMYK(_QuadrupleInput):
 #############################################################################
 class BentleyMerge(_Combiner):    
     
+    debug = False
+    
     def __init__(self):
         _Combiner.__init__(self)
         self.tweakInner()
@@ -423,12 +426,20 @@ class BentleyMerge(_Combiner):
 
     def transformInner(self, imgs):
         ret = imgs[0].copy()
+        dims = self.getDims()
         rload = ret.load()
-        iload0 = imgs[0].load()
+        img0 = imgs[0]
+        if self.debug:
+            img0 = img0.copy()
+            draw = ImageDraw.Draw(img0)
+            for i in xrange(0, dims[0], 10):
+                draw.line((i,0,i,dims[1]), (255,0,0))
+            for i in xrange(0, dims[1], 10):
+                draw.line((0,i,dims[0],i), (255,0,0))
+        iload0 = img0.load()
         iload1 = imgs[1].load()
         sigma = self.args["sigma"]
         angle = self.args["angle"]
-        dims = self.getDims()
         for x in xrange(0, dims[0]):
             for y in xrange(0, dims[1]):
                 m = round(sum(iload1[x,y])/765.0 * sigma)

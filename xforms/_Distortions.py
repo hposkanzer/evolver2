@@ -165,4 +165,26 @@ class DomeWarp(WarpBase):
                 y - a * math.cos(math.pi * (y - h[0]) / w) * abs(math.sin(math.pi * d / w)))
         
 
+class BentleyWarp(WarpBase):
+    """Warp the image using a the brightness of another image"""
+
+    def __init__(self,
+                 other,
+                 offset,
+                 angle
+                 ):
+        self.other = other
+        self.offset = offset
+        self.angle = angle
+
+    def getTransform(self, image):
+        return self.transform
+        
+    def transform(self, x, y):
+        m = sum(self.other.getpixel((min(x, self.other.size[0]-1),min(y, self.other.size[1]-1))))/765.0 * self.offset
+        mx = int(math.floor(math.cos(self.angle) * m))
+        my = int(math.floor(math.sin(self.angle) * m))
+        return (x+mx, y+my)
+        
+
 ### The End ###

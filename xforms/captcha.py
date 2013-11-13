@@ -135,3 +135,37 @@ class Wave(_xformer._MonoTransformer):
                 print "%s..." % (self)
                 exs.append(self.getExampleImage(imgs))
         return exs
+
+
+class BentleyWarp(_xformer._Transformer):    
+    
+    debug = False
+    
+    def __init__(self):
+        _xformer._Transformer.__init__(self)
+        self.tweakInner()
+
+    def getExpectedInputCount(self):
+        return 2
+
+    def getArgsString(self):
+        return "(%.2f, %.2f)" % (self.args["sigma"], self.args["angle"])
+
+    def transformInner(self, imgs):
+        d = _Distortions.BentleyWarp(imgs[1], self.args["sigma"], self.args["angle"])
+        return d.render(imgs[0])
+
+    def tweakInner(self):
+        self.args["sigma"] = random.uniform(10, 200)
+        self.args["angle"] = random.uniform(0, _xformer.TWOPI)
+
+    def getExamplesInner(self, imgs):
+        exs = []
+        for a in (0.0, math.pi/2):
+            for s in (10, 200):
+                self.args["sigma"] = s
+                self.args["angle"] = a
+                print "%s..." % (self)
+                exs.append(self.getExampleImage(imgs))
+        return exs
+    
