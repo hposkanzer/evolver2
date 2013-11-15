@@ -136,21 +136,25 @@ class _AddSubtractChops(_Combiner):
     
     def __init__(self):
         _Combiner.__init__(self)
-        self.args["scale"] = random.uniform(0.3, 3.0)
-        self.args["offset"] = random.randint(-64, 64)
+        self.tweakInner()
 
     def getArgsString(self):
         return "(%.2f, %d)" % (self.args["scale"], self.args["offset"])
 
     def tweakInner(self):
         self.args["scale"] = random.uniform(0.3, 3.0)
-        self.args["offset"] = random.randint(-64, 64)
+        offsetRange = self.getOffsetRange(self.args["scale"])
+        self.args["offset"] = random.randint(offsetRange[0], offsetRange[1])
 
+    def getOffsetRange(self, scale):
+        return [-64, 64]
+    
     def getExamplesInner(self, imgs):
         exs = []
-        for scale in [0.3, 1.0, 3.0]:
-            for offset in [-64, 0, 64]:
-                self.args["scale"] = scale
+        for scale in [0.5, 1.0, 2.8]:
+            self.args["scale"] = scale
+            offsetRange = self.getOffsetRange(scale)
+            for offset in [offsetRange[0], int(round(sum(offsetRange)/2.0)), offsetRange[1]]:
                 self.args["offset"] = offset
                 print "%s..." % (self)
                 exs.append(self.getExampleImage(imgs))
@@ -159,11 +163,17 @@ class _AddSubtractChops(_Combiner):
 
 class Add(_AddSubtractChops):
     
+    def getOffsetRange(self, scale):
+        return [-64, int(round(128/2.7 * scale - 128.0/2.7*0.3 - 64))]
+    
     def transformInner(self, imgs):
         return ImageChops.add(imgs[0], imgs[1], self.args["scale"], self.args["offset"])
     
 class Subtract(_AddSubtractChops):
     
+    def getOffsetRange(self, scale):
+        return [int(round(128/2.7 * scale - 128.0/2.7*0.3 - 64)), 64]
+
     def transformInner(self, imgs):
         return ImageChops.subtract(imgs[0], imgs[1], self.args["scale"], self.args["offset"])
 
