@@ -26,6 +26,8 @@ class _Transformer(Picklable.Picklable):
     
     is_non_transformer = 0
     is_reserved_transformer = 0
+    width = -1
+    depth = -1
     
     def __init__(self):
         Picklable.Picklable.__init__(self)

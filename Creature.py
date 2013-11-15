@@ -421,6 +421,6 @@ class Creature(Picklable.Picklable):
         f.close()
         self.head = creature.head
         self.ancestorName = creature.ancestorName
-        self.hidden = creature.hidden
+        self.hidden = getattr(creature, "hidden", False)
         
     
