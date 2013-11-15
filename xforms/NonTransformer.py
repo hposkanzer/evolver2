@@ -34,6 +34,12 @@ class NonTransformer(_xformer._Transformer):
     def getDepth(self):
         return 1
     
+    def getSources(self):
+        return [self.inputs[0]]
+    
+    def getTransformers(self):
+        return []
+
         
     def toString(self, i=0):
         return "  " * i + "%d: %s" % (i, self.getFilename())

@@ -13,6 +13,7 @@ import Experiment
 import Thumbnailer
 import Picklable
 import Creature
+import SrcImage
 import UsageError
 
 
@@ -300,25 +301,77 @@ class Stats(Common):
     
     
     def getStats(self, imgs):
+
+        html = []
         
         creatures = self.loadCreatures(imgs)
         xformCounts = {}
         depths = {}
+        widths = {}
+        sources = {}
+        xforms = {}
         for creature in creatures:
             self.addToHistogram(xformCounts, len(creature.getTransformerPairs()))
             self.addToHistogram(depths, creature.head.getDepth())
+            self.addToHistogram(widths, creature.head.getWidth())
+            for src in creature.head.getSources():
+                self.addToHistogram(sources, src.getFilename())
+            for xform in creature.head.getTransformers():
+                self.addToHistogram(xforms, xform.__class__.__name__)
         
-        html = []
-        html.append("<h1>Transform Count Histogram</h1>")
+        html.append("<h1>Transformers Histogram</h1>")
         html.append("<img src='%s'>" % (self.getHistogramCharUrl(xformCounts)))
         html.append("<h1>Depth Histogram</h1>")
         html.append("<img src='%s'>" % (self.getHistogramCharUrl(depths)))
+        html.append("<h1>Width Histogram</h1>")
+        html.append("<img src='%s'>" % (self.getHistogramCharUrl(widths)))
+        html.append("<h1>Top Transformers</h1>")
+        html.append(self.getTransformersSection(xforms))
+        html.append("<h1>Top Sources</h1>")
+        html.append(self.getSourcesSection(sources))
         
         return string.join(html, "\n")
     
 
+    def getTop(self, histogram):
+        l = sorted(histogram.items(), key=lambda x:x[1])[-10:]
+        l.reverse()
+        return l
+    
+    
+    def getTransformersSection(self, xforms):
+        html = []
+        html.append("<table border=0>")
+        maxCount = float(max(xforms.values()))
+        for (xform, count) in self.getTop(xforms):
+            href = "%s/col/lateral/examples/index.html#%s" % (self.loc.base_url, xform)
+            html.append("<tr>")
+            html.append("<td><a href='%s''>%s</a></td>" % (href, xform))
+            html.append("<td align='right'>%s</td>" % (count))
+            html.append("<td><div style='width:%dpx;height:10px;background-color:#ffcd0f'></td>" % (count/maxCount * 600))
+            html.append("</tr>")
+        html.append("</table>")
+        return string.join(html, "\n")
+    
+    def getSourcesSection(self, sources):
+        html = []
+        maxCount = float(max(sources.values()))
+        html.append("<table border=0>")
+        for (source, count) in self.getTop(sources):
+            src = SrcImage.SrcImage(source)
+            pageUrl = "%s/col/lateral/srcimgs/%s" % (self.loc.base_url, src.getPageName())
+            thumbUrl = "%s/col/lateral/srcimgs/%s" % (self.loc.base_url, src.getThumbName())
+            html.append("<tr>")
+            html.append("<td><a href='%s'><img src='%s'></a></td>" % (pageUrl, thumbUrl))
+            html.append("<td align='right'>%s</td>" % (count))
+            html.append("<td><div style='width:%dpx;height:10px;background-color:#ffcd0f'></td>" % (count/maxCount * 600))
+            html.append("</tr>")
+        html.append("</table>")
+        return string.join(html, "\n")
+    
+        
     def getHistogramCharUrl(self, histogram):
-        url = "http://chart.apis.google.com/chart?&cht=bvs&chs=800x300&chxt=x,y"
+        url = "http://chart.apis.google.com/chart?&cht=bvs&chs=1000x300&chxt=x,y"
         data = []
         maxValue = float(max(histogram.values()))
         for i in xrange(1, max(histogram.keys())+1):

@@ -93,7 +93,19 @@ class _Transformer(Picklable.Picklable):
             self.depth = idepth + 1
         return self.depth
         
+        
+    def getSources(self):
+        sources = []
+        for input in self.inputs:
+            sources.extend(input.getSources())
+        return sources
     
+    def getTransformers(self):
+        xforms = [self]
+        for input in self.inputs:
+            xforms.extend(input.getTransformers())
+        return xforms
+        
 
     def toString(self, i=0):
         l = []
