@@ -19,7 +19,7 @@ import UsageError
 def usage( msg=None ):
     if msg:
         sys.stderr.write( "ERROR:  %s\n" % (msg) )
-    sys.stderr.write( "Usage:  %s [--debug] [--local-only] ([-e exp -c creature] | [-c creature])\n" % (os.path.basename(sys.argv[0])) )
+    sys.stderr.write( "Usage:  %s [--debug] [--local-only] ([-e exp -c creature] | [-c creature] | [--stats])\n" % (os.path.basename(sys.argv[0])) )
     sys.stderr.write( "  exp:  The name of the experiment in which the creature exists.\n")
     sys.stderr.write( "  creature:  The name of the creature to show in the gallery.\n")
     sys.exit(-1)
@@ -39,7 +39,9 @@ def main():
             (odict, args) = getOptions()
         (odict, args) = processOptions(odict, args)
             
-        if odict.has_key("e") or not odict.has_key("c"):
+        if odict.has_key("stats"):
+            data = getStats(odict)
+        elif odict.has_key("e") or not odict.has_key("c"):
             data = getGallery(odict, odict.get("e"), odict.get("c"))
         else:
             data = getPage(odict, odict["c"], odict.get("p"), odict.get("n"))
@@ -75,6 +77,11 @@ def getPage(odict, creature, prev=None, next=None):
     return page.getHTML(creature, prev, next)
 
     
+def getStats(odict):
+    page = Stats(odict)
+    return page.getHTML()
+
+
 class Common:
     
     gallery_dir = "gallery"
@@ -96,7 +103,7 @@ class Common:
         l = filter(lambda x: x[-4:] == ".jpg", os.listdir(self.dir))
         l.sort()
         l.reverse()
-        return l[:self.max_creatures]
+        return l
     
     
     def getThumbHTML(self, creatureName=None):
@@ -266,6 +273,93 @@ class Page(Common):
 """
         return html
  
+ 
+class Stats(Common):
+    
+    def getHTML(self):
+        html = self.getHeader()
+        imgs = self.getCreatures()
+        html = html + self.getStats(imgs)
+        html = html + self.getFooter()
+        return html
+
+    
+    def getHeader(self):
+        html = """<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="application/xhtml+xml" />
+<title>Evolver 2 Gallery Stats</title>
+<link rel="stylesheet" type="text/css" href="/evolver2/gallery.css" />
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+<script type="text/javascript" src="/evolver2/jquery.scrollTo-1.4.2-min.js"></script>
+</head>
+<body>
+<font size='-1'><a href='/'>Chez Zeus</a> &gt; <a href='/evolver2'>Photo Evolver 2</a> &gt; Gallery Stats</font><p>
+"""
+        return html
+    
+    
+    def getStats(self, imgs):
+        
+        creatures = self.loadCreatures(imgs)
+        xformCounts = {}
+        depths = {}
+        for creature in creatures:
+            self.addToHistogram(xformCounts, len(creature.getTransformerPairs()))
+            self.addToHistogram(depths, creature.head.getDepth())
+        
+        html = []
+        html.append("<h1>Transform Count Histogram</h1>")
+        html.append("<img src='%s'>" % (self.getHistogramCharUrl(xformCounts)))
+        html.append("<h1>Depth Histogram</h1>")
+        html.append("<img src='%s'>" % (self.getHistogramCharUrl(depths)))
+        
+        return string.join(html, "\n")
+    
+
+    def getHistogramCharUrl(self, histogram):
+        url = "http://chart.apis.google.com/chart?&cht=bvs&chs=800x300&chxt=x,y"
+        data = []
+        maxValue = float(max(histogram.values()))
+        for i in xrange(1, max(histogram.keys())+1):
+            # Data is always out of 100.
+            data.append(str(int(round(histogram.get(i, 0)/maxValue * 100.0))))
+        url = url + "&chxr=0,1,%d|1,0,%s&chd=t:%s" % (max(histogram.keys()), int(maxValue), ",".join(data))
+        return url
+        
+        
+    def addToHistogram(self, histogram, count):
+        if not histogram.has_key(count):
+            histogram[count] = 0
+        histogram[count] = histogram[count] + 1
+     
+     
+    def loadCreatures(self, imgs):
+        l = []
+        first = True
+        for img in imgs:
+            abspath = os.path.join(self.dir, img)
+            realpath = os.readlink(abspath)
+            foo = os.path.split(realpath)[0]  # => .../expname/creatures
+            foo = os.path.split(foo)[0]       # => .../expname/
+            expName = os.path.split(foo)[1]   # I <3 Python
+            exp = Experiment.Experiment(expName)
+            if (first == True):
+                exp.loadTransforms()
+                first = False
+            creature = exp.getCreature(self.toName(img))
+            creature.loadConfig()
+            l.append(creature)
+        return l
+
+
+    def getFooter(self):
+        html = """
+</body>
+</html>
+"""
+        return html
+    
 
 def getCGIOptions():
     
@@ -275,7 +369,7 @@ def getCGIOptions():
     if odict.has_key("e"):
         if not odict.has_key("c"):
             raise UsageError.UsageError("No creature specified")
-    for opt in ["e", "c", "n", "p"]:
+    for opt in ["e", "c", "n", "p", "stats"]:
         if odict.has_key(opt):
             odict[opt] = odict[opt][0]
     
@@ -285,7 +379,7 @@ def getCGIOptions():
 def getOptions():
     
     try:
-        (tt, args) = getopt.getopt( sys.argv[1:], "he:c:", ["help", "debug", "local-only"] )
+        (tt, args) = getopt.getopt( sys.argv[1:], "he:c:", ["help", "debug", "local-only", "stats"] )
     except getopt.error:
         usage( str(sys.exc_info()[1]) )
 
