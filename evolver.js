@@ -384,7 +384,9 @@ function Thumb(ring, parentThumb) {
 					$(self.div).css("z-index", 1);
 			        $(self.del).show();
                     $(self.mutate_img).show();
-			        $("#canvas").css({"background-image": "url(" + self.img.src + ")"});
+                    if (self.name != null) {
+                        $("#canvas").css({"background-image": "url(" + self.img.src + ")"});
+                    }
 			        if (!tileMode && !reflectMode) {
 			            var x = $("#frame").scrollLeft() + ($("#frame").width() - creatureWidth)/2;
                         var y = $("#frame").scrollTop() + ($("#frame").height() - creatureHeight)/2;
@@ -512,21 +514,29 @@ function Thumb(ring, parentThumb) {
 
 
 	this.onFail = function() {
-		self.thumb.src = "broken.jpg";
-		self.on_arrive_src = "broken.jpg";
+        // Hide the loading message.
+        $("#msg").css({display: "none"});
+        // Set the returned attributes.
+        self.thumb.src = "broken.jpg";
+        self.on_arrive_src = "broken.jpg";
+        // Add the delete handler.
+        self.del.src = "delete.gif";
+        $(self.del).click(self.doHide);
 	};
 
 	
 	this.doHide = function() {
-        var data = {"e": experimentName, "c": self.name};
-        $.ajax({
-            type: "GET",
-            url: "/cgi-bin/hide_creature.py", 
-            data: data,
-            dataType: "json",
-            async: true,
-            error: self.onFail // Doesn't get called when we're using jsonp.
-        });
+	    if (self.name != null) {
+	        var data = {"e": experimentName, "c": self.name};
+	        $.ajax({
+	            type: "GET",
+	            url: "/cgi-bin/hide_creature.py", 
+	            data: data,
+	            dataType: "json",
+	            async: true,
+	            error: self.onFail // Doesn't get called when we're using jsonp.
+	        });
+	    }
 		hideThumb(self);
 	};
 	
