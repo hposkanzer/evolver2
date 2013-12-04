@@ -70,6 +70,7 @@ function Thumb(index, td) {
 			async: true,
 		});
 		req.fail(self.onFail);
+        req.fail(initCreatureInner);
 		req.done(self.onLoad);
 		req.done(initCreatureInner);
 	};
