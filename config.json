@@ -1,17 +1,17 @@
 {
-  "thumb_height": 112, 
+  "thumb_height": 84, 
+  "tile_mode": false, 
   "thumb_width": 150, 
   "thumbnail_size": 150, 
   "progeny": 5, 
   "tweak_rate": 0.8, 
-  "img_width": 800, 
+  "img_width": 1920, 
+  "reflect_mode": false, 
   "max_depth": 7, 
   "min_depth": 2, 
   "start": 5, 
-  "img_height": 600, 
+  "img_height": 1080, 
   "debug": false, 
   "index_columns": 5, 
-  "mutation_rate": 0.8,
-  "tile_mode": false,
-  "reflect_mode": false
+  "mutation_rate": 0.8
 }

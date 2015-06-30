@@ -5,8 +5,8 @@ Number.prototype.mod = function(n) {
 
 //Experiment stuff
 var experimentName = null;
-var creatureWidth = 800;
-var creatureHeight = 600;
+var creatureWidth = 1920;
+var creatureHeight = 1080;
 var thumbWidth = 152; // +2 to include the border
 var thumbHeight = 114; // +2 to include the border
 var thumbPadding = 10;
