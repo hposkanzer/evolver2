@@ -2,7 +2,7 @@ import sys
 import os
 import string
 
-import Image
+from PIL import Image
 import Picklable
 
 sys.path.append( os.path.expanduser( "~/lib/boto-1.8d" ) )

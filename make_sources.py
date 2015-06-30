@@ -9,7 +9,7 @@ import time
 sys.path.append(os.path.expanduser("~/lib/python/PIL/"))
 sys.path.append("/usr/lib64/python2.3/site-packages/PIL")
 
-import Image
+from PIL import Image
 import ImageLoader
 import Experiment
 import SrcImage

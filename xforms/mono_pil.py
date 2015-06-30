@@ -7,14 +7,14 @@ import os
 import string
 import math
 import _xformer
-import Image
-import ImageFilter
+from PIL import Image
+from PIL import ImageFilter
 import random
-import ImageOps
-import ImageEnhance
-import ImageChops
-import ImageDraw
-import ImageFont
+from PIL import ImageOps
+from PIL import ImageEnhance
+from PIL import ImageChops
+from PIL import ImageDraw
+from PIL import ImageFont
 import Location
 
 

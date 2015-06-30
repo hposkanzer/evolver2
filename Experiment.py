@@ -9,6 +9,7 @@ import ConfigParser
 
 sys.path.append(os.path.expanduser("~/lib/python/PIL/"))
 sys.path.append("/usr/lib64/python2.3/site-packages/PIL")
+sys.path.append("/usr/local/lib/python2.7/site-packages")
 
 import Location
 import Creature

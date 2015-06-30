@@ -8,7 +8,7 @@ import _xformer
 import random
 import math
 
-import ImageDraw
+from PIL import ImageDraw
 import _voronoi
 
 
