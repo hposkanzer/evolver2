@@ -6,10 +6,10 @@ Created on Aug 12, 2010
 import math
 
 import _xformer
-import ImageChops
-import ImageDraw
+from PIL import ImageChops
+from PIL import ImageDraw
 import random
-import Image
+from PIL import Image
 
 
 #############################################################################

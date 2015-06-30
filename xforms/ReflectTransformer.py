@@ -4,7 +4,7 @@ Created on Aug 8, 2010
 @author: hmp@drzeus.best.vwh.net
 '''
 import _xformer
-import Image
+from PIL import Image
 
 # A special class that's the head-point of transformer chains when in reflect mode.
 class ReflectTransformer(_xformer._MonoTransformer):

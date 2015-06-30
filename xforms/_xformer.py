@@ -6,14 +6,14 @@ Created on Aug 5, 2010
 import Picklable
 import random
 import copy
-import ImageDraw
-import ImageFont
+from PIL import ImageDraw
+from PIL import ImageFont
 import os
 import string
 import sha  # Server runs on Python 2.4.
 import math
 
-import Image
+from PIL import Image
 
 # It takes up a lot of disk space and doesn't improve performance that much.
 # It would allow me to show the product of every step of the transformation, though.
@@ -33,7 +33,7 @@ class _Transformer(Picklable.Picklable):
         Picklable.Picklable.__init__(self)
         self.inputs = []
         self.args = {}
-        self.dims = (800, 600) # Hardcoding this for now.
+        self.dims = (1920, 1080) # Hardcoding this for now.
         self.resetCache()
     
     def __str__(self):
@@ -169,7 +169,7 @@ class _Transformer(Picklable.Picklable):
             
     def saveThumbnail(self, experiment, img):
         fname = self.getThumbPath(experiment)
-        if os.path.exists(fname):
+        if False: #os.path.exists(fname):
             self.logger.debug("Thumbnail for %s (%s) already exists." % (self, self.getDigest()))
         else:
             self.logger.debug("Saving thumbnail for %s (%s)..." % (self, self.getDigest()))

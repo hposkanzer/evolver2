@@ -1,4 +1,4 @@
-import Image
+from PIL import Image
 import UsageError
 import os
 import Picklable

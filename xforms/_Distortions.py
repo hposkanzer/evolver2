@@ -7,7 +7,7 @@ Distortion layers for visual CAPTCHAs
 # Copyright (C) 2004 Micah Dowty <micah@navi.cx>
 #
 
-import ImageDraw, Image
+from PIL import ImageDraw, Image
 import random, math
 
 

@@ -6,7 +6,7 @@ Created on Aug 10, 2010
 import os
 import string
 
-import Image
+from PIL import Image
 
 
 class SrcImage(object):
@@ -16,6 +16,9 @@ class SrcImage(object):
     
     def getPath(self):
         return self.fpath
+    
+    def setPath(self, path):
+        self.fpath = path
     
     def getThumbPath(self):
         return self.getThumbName(self.getPath())
