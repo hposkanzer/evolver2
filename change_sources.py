@@ -4,6 +4,7 @@ import os
 import sys
 import getopt
 import json
+import re
 
 import Location
 import Experiment
@@ -34,14 +35,17 @@ def main():
 
 
 def newCreature(odict, exp, source, destination, source_map={}):
-    
     exp = Experiment.Experiment(exp)
     exp.loadConfig()
     creature = Creature.Creature(exp, source)
     creature.loadConfig()
+    return newCreatureInner(odict, exp, creature, destination, source_map)
+    
+    
+def newCreatureInner(odict, exp, creature, destination, source_map={}):
     creature.id = destination
     changeSources(creature, source_map)
-    print "Generatiing..."
+    print "Generatiing %s..." % (destination)
     creature.saveConfig()
     creature.run()
     return creature.getInfo()
@@ -58,11 +62,13 @@ def changeSourcesInner(xform, source_map):
         srcimg = xform.getSrcImage()
         old_path = srcimg.getPath()
         (dir, fname) = os.path.split(old_path)
-        fname = source_map.get(fname, fname)
-        new_path = os.path.join(dir, fname)
-        if (new_path != old_path):
-            srcimg.setPath(new_path)
-            print "Changed %s to %s." % (old_path, new_path)
+        for (regex, new_fname) in source_map.items():
+            if re.search(regex, fname):
+                new_path = os.path.join(dir, new_fname)
+                if (new_path != old_path):
+                    srcimg.setPath(new_path)
+                    print "Changed %s to %s." % (old_path, new_path)
+                break
     else:
         for input in xform.inputs:
             changeSourcesInner(input, source_map)
