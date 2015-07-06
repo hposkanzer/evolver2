@@ -4,17 +4,19 @@ import os
 import sys
 import getopt
 
+import Experiment
+import Creature
 import change_sources
 
 sys.path.append("/Users/hmp/workspace/evolver2")
 sys.path.append("/Users/hmp/workspace/evolver2/xforms")
 source_map_formats = {
-              "IMG_1702_0010.jpg": "IMG_1702_%04d.jpg",
-              "IMG_1703_0010.jpg": "IMG_1703_%04d.jpg",
-              "IMG_1704_0010.jpg": "IMG_1704_%04d.jpg",
-              "IMG_1705_0010.jpg": "IMG_1705_%04d.jpg",
-              "IMG_1706_0010.jpg": "IMG_1706_%04d.jpg",
-              "IMG_1707_0010.jpg": "IMG_1707_%04d.jpg"
+              "IMG_1702_\d\d\d\d.jpg": "IMG_1702_%04d.jpg",
+              "IMG_1703_\d\d\d\d.jpg": "IMG_1703_%04d.jpg",
+              "IMG_1704_\d\d\d\d.jpg": "IMG_1704_%04d.jpg",
+              "IMG_1705_\d\d\d\d.jpg": "IMG_1705_%04d.jpg",
+              "IMG_1706_\d\d\d\d.jpg": "IMG_1706_%04d.jpg",
+              "IMG_1707_\d\d\d\d.jpg": "IMG_1707_%04d.jpg"
               }
 
 def usage( msg=None ):
@@ -35,16 +37,26 @@ def main():
 
 
 def evolveFrames(odict, exp, source):
+    exp = Experiment.Experiment(exp)
+    exp.loadConfig()
+    exp.loadImages()
+    exp.loadTransforms()
+    source = Creature.Creature(exp, source)
+    source.loadConfig()
+    source_id = source.id
     for frame in range(1, 101):
-        evolveFrame(odict, exp, source, frame)
+        if (frame % 10 == 0):
+            print "Evolving..."
+            source.evolve()
+        evolveFrame(odict, exp, source, source_id, frame)
         
         
-def evolveFrame(odict, exp, source, frame):
-    destination = source + "_%04d" % (frame)
+def evolveFrame(odict, exp, source, source_id, frame):
+    destination = source_id + "_%04d_3" % (frame)
     source_map = {}
     for (k, v) in source_map_formats.items():
         source_map[k] = v % (frame)
-    change_sources.newCreature(odict, exp, source, destination, source_map)
+    change_sources.newCreatureInner(odict, exp, source, destination, source_map)
     
     
 def getOptions():
