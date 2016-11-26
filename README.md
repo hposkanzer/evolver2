@@ -7,4 +7,4 @@ This is my personal project for using genetic algorithms to evolve images from p
 
 It is not suitable for deployment anywhere but my servers right now, but you're welcome to look and comment.
 
-To see it in action, go to http://drzeus.best.vwh.net/evolver2/.
+To see it in action, go to http://drze.us/evolver2/.
