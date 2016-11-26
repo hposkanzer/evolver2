@@ -29,19 +29,11 @@ class Location:
 
         # Home Mac
         self.base_dir = "/Users/hmp/Documents/workspace/evolver2"
-        self.base_url = "http://localhost/~hmp/%s" % (self.project_name)
+        self.base_url = "http://localhost:8080/%s" % (self.project_name)
         if not os.path.isdir(self.base_dir):
             # Production
-            self.base_dir = "/usr/home/harold/www/htdocs/evolver2"
-            self.base_url = "http://drzeus.best.vwh.net/%s" % (self.project_name)
-        if not os.path.isdir(self.base_dir):
-            # Work Mac
-            self.base_dir = "/Users/hmp/Documents/best/evolver2"
-            self.base_url = "http://localhost:8000/%s" % (self.project_name)
-        if not os.path.isdir(self.base_dir):
-            # Home Windows
-            self.base_dir = "C:\\Users\\family\\Documents\\workspace\\Evolver 2"
-            self.base_url = "http://localhost"
+            self.base_dir = "/home/drzeus/www/evolver2"
+            self.base_url = "http://drze.us/%s" % (self.project_name)
         # Amazon S3
         self.s3_base_url = "http://drzeus.s3.amazonaws.com/%s" % (self.project_name)
     
