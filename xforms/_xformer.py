@@ -10,7 +10,7 @@ from PIL import ImageDraw
 from PIL import ImageFont
 import os
 import string
-import sha  # Server runs on Python 2.4.
+import hashlib
 import math
 
 from PIL import Image
@@ -71,7 +71,7 @@ class _Transformer(Picklable.Picklable):
     
     def getDigest(self):
         if not self.digest:
-            h = sha.new()
+            h = hashlib.sha1()
             h.update(self.getDigestInput())
             self.digest = h.hexdigest()
         return self.digest
