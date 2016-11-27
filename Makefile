@@ -32,7 +32,17 @@ EXECS=get_creatures.py \
 	make_examples.py \
 	make_sources.py \
 	hide_creature.py
+
+CGIS=Location.py \
+	get_creatures.py \
+	new_creature.py \
+	new_experiment.py \
+	gallery.py \
+	hide_creature.py
 	
+cgi:
+	/bin/cp -f ${CGIS} ../cgi-bin
+
 xfer:
 	rsync -auv --exclude-from ./rsync_excludes.txt . drzeus.best.vwh.net:www/htdocs/evolver2
 	ssh drzeus.best.vwh.net 'cd www/htdocs/evolver2 && make bestify perms'

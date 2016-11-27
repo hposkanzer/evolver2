@@ -3,6 +3,11 @@ import sys
 import string
 
 instance = None
+home_base = "/Users/hmp/Documents/workspace/evolver2"
+prod_base = "/home/drzeus/www/evolver2"
+
+sys.path.append(home_base)
+sys.path.append(prod_base)
 
 def getInstance():
     global instance
@@ -28,11 +33,11 @@ class Location:
         self.project_name = "evolver2"
 
         # Home Mac
-        self.base_dir = "/Users/hmp/Documents/workspace/evolver2"
+        self.base_dir = home_base
         self.base_url = "http://localhost:8080/%s" % (self.project_name)
         if not os.path.isdir(self.base_dir):
             # Production
-            self.base_dir = "/home/drzeus/www/evolver2"
+            self.base_dir = prod_base
             self.base_url = "http://drze.us/%s" % (self.project_name)
         # Amazon S3
         self.s3_base_url = "http://drzeus.s3.amazonaws.com/%s" % (self.project_name)
