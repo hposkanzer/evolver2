@@ -33,7 +33,7 @@ class _Transformer(Picklable.Picklable):
         Picklable.Picklable.__init__(self)
         self.inputs = []
         self.args = {}
-        self.dims = (1920, 1080) # Hardcoding this for now.
+        self.dims = (800, 600) # Hardcoding this for now.
         self.resetCache()
     
     def __str__(self):
@@ -169,7 +169,7 @@ class _Transformer(Picklable.Picklable):
             
     def saveThumbnail(self, experiment, img):
         fname = self.getThumbPath(experiment)
-        if False: #os.path.exists(fname):
+        if os.path.exists(fname):
             self.logger.debug("Thumbnail for %s (%s) already exists." % (self, self.getDigest()))
         else:
             self.logger.debug("Saving thumbnail for %s (%s)..." % (self, self.getDigest()))

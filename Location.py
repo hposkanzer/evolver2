@@ -3,7 +3,7 @@ import sys
 import string
 
 instance = None
-home_base = "/Users/hmp/Documents/workspace/evolver2"
+home_base = "/Users/hmp/Documents/best/www/evolver2"
 prod_base = "/home/drzeus/www/evolver2"
 
 sys.path.append(home_base)
