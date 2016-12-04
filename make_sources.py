@@ -6,9 +6,6 @@ import getopt
 import logging
 import time
 
-sys.path.append(os.path.expanduser("~/lib/python/PIL/"))
-sys.path.append("/usr/lib64/python2.3/site-packages/PIL")
-
 from PIL import Image
 import ImageLoader
 import Experiment

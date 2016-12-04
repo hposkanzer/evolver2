@@ -7,9 +7,6 @@ import random
 import logging
 import time
 
-sys.path.append(os.path.expanduser("~/lib/python/PIL/"))
-sys.path.append("/usr/lib64/python2.3/site-packages/PIL")
-
 import ImageLoader
 import TransformLoader
 import Experiment
