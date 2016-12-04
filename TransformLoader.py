@@ -1,8 +1,3 @@
-'''
-Created on Aug 5, 2010
-
-@author: hmp@drzeus.best.vwh.net
-'''
 import inspect
 import os
 import sys

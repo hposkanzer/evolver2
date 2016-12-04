@@ -1,8 +1,3 @@
-'''
-Created on Aug 8, 2010
-
-@author: hmp@drzeus.best.vwh.net
-'''
 import _xformer
 from PIL import Image
 

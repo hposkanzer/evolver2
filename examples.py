@@ -1,9 +1,4 @@
 #!/usr/bin/env python
-'''
-Created on Aug 8, 2010
-
-@author: hmp@drzeus.best.vwh.net
-'''
 import os
 import ImageLoader
 import TransformLoader

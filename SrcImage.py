@@ -1,8 +1,3 @@
-'''
-Created on Aug 10, 2010
-
-@author: hmp@drzeus.best.vwh.net
-'''
 import os
 import string
 
