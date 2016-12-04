@@ -18,7 +18,7 @@ import Picklable
 def usage( msg=None ):
     if msg:
         sys.stderr.write( "ERROR:  %s\n" % (msg) )
-    sys.stderr.write( "Usage:  %s [--debug] [--local-only] [-s srcimg_dir] [-e examples_dir] [xform ...]\n" % (os.path.basename(sys.argv[0])) )
+    sys.stderr.write( "Usage:  %s [--debug] [--s3] [-s srcimg_dir] [-e examples_dir] [xform ...]\n" % (os.path.basename(sys.argv[0])) )
     sys.stderr.write( "  -s:  Use this dir for source images.  Defaults to './srcimgs'.\n")
     sys.stderr.write( "  -e:  Use this dir for the output.  Defaults to './examples'.\n")
     sys.stderr.write( "  xform:  Only execute these transformers.\n")
@@ -49,7 +49,7 @@ class ExampleGenerator(Picklable.Picklable):
         t0 = time.time()
         self.logger.info("Generating filter examples...")
         self.config = self.loadConfig()
-        self.tn = Thumbnailer.Thumbnailer(self.config["thumbnail_size"], self.odict.get("local-only", False))
+        self.tn = Thumbnailer.Thumbnailer(self.config["thumbnail_size"], not self.odict.get("s3", False))
         self.loadSrcImages()
         self.loadTransforms()
         sets = self.writeExamplePages()
@@ -226,7 +226,7 @@ class ExampleSet(Picklable.Picklable):
 def getOptions():
     
     try:
-        (tt, args) = getopt.getopt( sys.argv[1:], "hs:", ["help", "debug", "local-only"] )
+        (tt, args) = getopt.getopt( sys.argv[1:], "hs:", ["help", "debug", "s3"] )
     except getopt.error:
         usage( str(sys.exc_info()[1]) )
 
@@ -245,8 +245,8 @@ def getOptions():
     if odict.has_key("debug"):
         logging.getLogger().setLevel(logging.DEBUG)
         
-    if odict.has_key("local-only"):
-        odict["local-only"] = True
+    if odict.has_key("s3"):
+        odict["s3"] = True
         
     if not odict.has_key("s"):
         odict["s"] = Experiment.Experiment.srcimg_dir

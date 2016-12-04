@@ -20,7 +20,7 @@ import UsageError
 def usage( msg=None ):
     if msg:
         sys.stderr.write( "ERROR:  %s\n" % (msg) )
-    sys.stderr.write( "Usage:  %s [--debug] [--local-only] ([-e exp -c creature] | [-c creature] | [--stats])\n" % (os.path.basename(sys.argv[0])) )
+    sys.stderr.write( "Usage:  %s [--debug] [--s3] ([-e exp -c creature] | [-c creature] | [--stats])\n" % (os.path.basename(sys.argv[0])) )
     sys.stderr.write( "  exp:  The name of the experiment in which the creature exists.\n")
     sys.stderr.write( "  creature:  The name of the creature to show in the gallery.\n")
     sys.exit(-1)
@@ -96,7 +96,7 @@ class Common:
     
     def __init__(self, odict):
         self.odict = odict
-        self.tn = Thumbnailer.Thumbnailer(666, odict.has_key("local-only"))
+        self.tn = Thumbnailer.Thumbnailer(666, not odict.has_key("s3"))
         self.logger = logging.getLogger(self.__class__.__name__)
 
 
@@ -115,8 +115,8 @@ class Common:
         realpath = os.readlink(abspath)
         url = self.getThumbURL(realpath)
         lo = ""
-        if (self.odict.has_key("local-only")):
-            lo = "&local-only=1"
+        if (self.odict.has_key("s3")):
+            lo = "&s3=1"
         return "<a href='%s?c=%s%s'><img class='linkedthumb' src='%s'></a>" % (self.cgi_url, creatureName, lo, url)
 
     
@@ -254,8 +254,8 @@ class Page(Common):
         
     def getHeader(self, creatureName):
         lo = ""
-        if (self.odict.has_key("local-only")):
-            lo = "?local-only=1"
+        if (self.odict.has_key("s3")):
+            lo = "?s3=1"
         html = """<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml" />
@@ -422,7 +422,7 @@ def getCGIOptions():
     if odict.has_key("e"):
         if not odict.has_key("c"):
             raise UsageError.UsageError("No creature specified")
-    for opt in ["e", "c", "n", "p", "stats"]:
+    for opt in ["e", "c", "n", "p", "s3", "stats"]:
         if odict.has_key(opt):
             odict[opt] = odict[opt][0]
     
@@ -432,7 +432,7 @@ def getCGIOptions():
 def getOptions():
     
     try:
-        (tt, args) = getopt.getopt( sys.argv[1:], "he:c:", ["help", "debug", "local-only", "stats"] )
+        (tt, args) = getopt.getopt( sys.argv[1:], "he:c:", ["help", "debug", "s3", "stats"] )
     except getopt.error:
         usage( str(sys.exc_info()[1]) )
 

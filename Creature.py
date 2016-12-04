@@ -60,8 +60,8 @@ class Creature(Picklable.Picklable):
     
     def getGalleryURL(self):
         url = "/cgi-bin/gallery.py?e=%s&c=%s" % (self.experiment.getName(), self.getName())
-        if self.experiment.getConfig()["local_only"]:
-            url = url + "&local-only=1"
+        if not self.experiment.getConfig()["local_only"]:
+            url = url + "&s3=1"
         return url
     
     def getInfo(self):
