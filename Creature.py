@@ -372,7 +372,7 @@ class Creature(Picklable.Picklable):
             # Return the non-transformer
             xform = self.getRandomSrcImage()
         else:
-            # Return some random transfomer
+            # Return some random transformer
             xform = self.experiment.getRandomTransform()
             for i in range(xform.getExpectedInputCount()):
                 xform.addInput(self.makeGenome(depth - 1))

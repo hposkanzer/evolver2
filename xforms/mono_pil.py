@@ -1043,7 +1043,7 @@ class TV(_xformer._MonoTransformer):
         dim = self.args["dim"]
         overlay = Image.new("L", dims, "white")
         for i in range(0, dims[1], rows*2):
-            overlay.paste(255 * dim, (0,i,dims[0],i+rows))
+            overlay.paste(int(round(255 * dim)), (0,i,dims[0],i+rows))
         return ImageChops.multiply(img, overlay.convert("RGB"))
 
     def tweakInner(self):
