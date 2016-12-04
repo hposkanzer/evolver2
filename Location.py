@@ -34,7 +34,7 @@ class Location:
 
         # Home Mac
         self.base_dir = home_base
-        self.base_url = "http://localhost:8080/%s" % (self.project_name)
+        self.base_url = "http://localhost:8080/www/%s" % (self.project_name)
         if not os.path.isdir(self.base_dir):
             # Production
             self.base_dir = prod_base
