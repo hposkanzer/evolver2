@@ -7,6 +7,7 @@ import getopt
 import traceback
 import string
 import logging
+import shutil
 
 import Location
 import Experiment
@@ -85,11 +86,11 @@ def getStats(odict):
 
 class Common:
     
+    loc = Location.getInstance()
     gallery_dir = "gallery"
-    base_url = "/evolver2/%s" % (gallery_dir)
+    base_url = "%s/%s" % (loc.base_url, gallery_dir)
     cgi_url = "/cgi-bin/gallery.py"
     max_creatures = 1000
-    loc = Location.getInstance()
     dir = os.path.join(loc.base_dir, gallery_dir)
     odict = {}
     tn = None
@@ -101,7 +102,7 @@ class Common:
 
 
     def getCreatures(self):
-        l = filter(lambda x: x[-4:] == ".jpg", os.listdir(self.dir))
+        l = filter(lambda x: x.endswith(".jpg") and not x.endswith(".t.jpg") , os.listdir(self.dir))
         l.sort()
         l.reverse()
         return l
@@ -112,8 +113,7 @@ class Common:
             return ""
         img = self.toImage(creatureName)
         abspath = os.path.join(self.dir, img)
-        realpath = os.readlink(abspath)
-        url = self.getThumbURL(realpath)
+        url = self.getThumbURL(abspath)
         lo = ""
         if (self.odict.has_key("s3")):
             lo = "&s3=1"
@@ -162,7 +162,7 @@ class Gallery(Common):
         dst = os.path.join(self.dir, creature.getImageName())
         if os.path.exists(dst):
             return
-        os.symlink(src, dst)
+        shutil.copyfile(src, dst)
         
         
     def getTable(self, imgs, newCreature=None):
@@ -190,9 +190,9 @@ class Gallery(Common):
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml" />
 <title>Evolver 2 Gallery</title>
-<link rel="stylesheet" type="text/css" href="/evolver2/gallery.css" />
+<link rel="stylesheet" type="text/css" href="%s/gallery.css" />
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
-<script type="text/javascript" src="/evolver2/jquery.scrollTo-1.4.2-min.js"></script>
+<script type="text/javascript" src="%s/jquery.scrollTo-1.4.2-min.js"></script>
 <script type="text/javascript">
 $(document).ready(init);
 function init() {
@@ -201,8 +201,8 @@ function init() {
 </script>
 </head>
 <body>
-<font size='-1'><a href='/'>Chez Zeus</a> &gt; <a href='/evolver2'>Photo Evolver 2</a> &gt; Gallery</font><p>
-"""
+<font size='-1'><a href='/'>Chez Zeus</a> &gt; <a href='%s'>Photo Evolver 2</a> &gt; Gallery</font><p>
+""" % (self.loc.base_url, self.loc.base_url, self.loc.base_url)
         return html
 
     def getFooter(self):
@@ -260,11 +260,11 @@ class Page(Common):
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml" />
 <title>Evolver 2 Gallery</title>
-<link rel="stylesheet" type="text/css" href="/evolver2/gallery.css" />
+<link rel="stylesheet" type="text/css" href="%s/gallery.css" />
 </head>
 <body>
-<font size='-1'><a href='/'>Chez Zeus</a> &gt; <a href='/evolver2'>Photo Evolver 2</a> &gt; <a href='%s%s'>Gallery</a> &gt; Creature %s</font><p>
-""" % (self.cgi_url, lo, creatureName)
+<font size='-1'><a href='/'>Chez Zeus</a> &gt; <a href='%s'>Photo Evolver 2</a> &gt; <a href='%s%s'>Gallery</a> &gt; Creature %s</font><p>
+""" % (self.loc.base_url, self.loc.base_url, self.cgi_url, lo, creatureName)
         return html
 
     def getFooter(self):
@@ -290,13 +290,13 @@ class Stats(Common):
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml" />
 <title>Evolver 2 Gallery Stats</title>
-<link rel="stylesheet" type="text/css" href="/evolver2/gallery.css" />
+<link rel="stylesheet" type="text/css" href="%s/gallery.css" />
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
-<script type="text/javascript" src="/evolver2/jquery.scrollTo-1.4.2-min.js"></script>
+<script type="text/javascript" src="%s/jquery.scrollTo-1.4.2-min.js"></script>
 </head>
 <body>
-<font size='-1'><a href='/'>Chez Zeus</a> &gt; <a href='/evolver2'>Photo Evolver 2</a> &gt; Gallery Stats</font><p>
-"""
+<font size='-1'><a href='/'>Chez Zeus</a> &gt; <a href='%s'>Photo Evolver 2</a> &gt; Gallery Stats</font><p>
+""" % (self.loc.base_url, self.loc.base_url, self.loc.base_url)
         return html
     
     
@@ -432,7 +432,7 @@ def getCGIOptions():
 def getOptions():
     
     try:
-        (tt, args) = getopt.getopt( sys.argv[1:], "he:c:", ["help", "debug", "s3", "stats"] )
+        (tt, args) = getopt.getopt( sys.argv[1:], "he:c:n:p:", ["help", "debug", "s3", "stats"] )
     except getopt.error:
         usage( str(sys.exc_info()[1]) )
 
