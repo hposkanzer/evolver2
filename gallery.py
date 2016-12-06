@@ -148,14 +148,12 @@ class Gallery(Common):
     
     def addCreature(self, creature):
         self.logger.info("Adding %s from %s..." % (creature, creature.experiment))
-        # Won't work on Windows!
-        src = os.path.join(creature.experiment.getCreaturesDir(), creature.getImageName())
-        if not os.path.exists(src):
-            raise Creature.NoSuchCreature(creature)
-        dst = os.path.join(self.dir, creature.getImageName())
-        if os.path.exists(dst):
-            return
-        shutil.copyfile(src, dst)
+        for fname in [creature.getImageName(), creature.getThumbName()]:
+            src = os.path.join(creature.experiment.getCreaturesDir(), fname)
+            if not os.path.exists(src):
+                raise Creature.NoSuchCreature(creature)
+            dst = os.path.join(self.dir, fname)
+            shutil.copyfile(src, dst)
         
         
     def getTable(self, imgs, newCreature=None):
