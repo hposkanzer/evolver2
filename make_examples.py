@@ -251,9 +251,6 @@ def getOptions():
     if not odict.has_key("s"):
         odict["s"] = Experiment.Experiment.srcimg_dir
 
-    if not odict.has_key("e"):
-        odict["e"] = Experiment.Experiment.examples_dir
-
     return odict, args
 
 
