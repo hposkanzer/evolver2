@@ -153,7 +153,7 @@ class _BuiltInDegreeFilter(_xformer._MonoTransformer):
         self.args["filter"] = random.choice(self.filters)
 
     def getArgsString(self):
-        return "(%s)" % (str(self.args["filter"]).split(".")[-1])
+        return "(%s)" % (self.args["filter"].__name__)
 
     def transformImage(self, img):
         return img.filter(self.args["filter"])
