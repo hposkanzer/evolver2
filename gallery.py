@@ -21,7 +21,7 @@ import UsageError
 def usage( msg=None ):
     if msg:
         sys.stderr.write( "ERROR:  %s\n" % (msg) )
-    sys.stderr.write( "Usage:  %s [--debug] [--s3] ([-e exp -c creature] | [-c creature] | [--stats])\n" % (os.path.basename(sys.argv[0])) )
+    sys.stderr.write( "Usage:  %s [--debug] [--s3] ([-e exp -c creature] | [-c creature])\n" % (os.path.basename(sys.argv[0])) )
     sys.stderr.write( "  exp:  The name of the experiment in which the creature exists.\n")
     sys.stderr.write( "  creature:  The name of the creature to show in the gallery.\n")
     sys.exit(-1)
@@ -41,9 +41,7 @@ def main():
             (odict, args) = getOptions()
         (odict, args) = processOptions(odict, args)
             
-        if odict.has_key("stats"):
-            data = getStats(odict)
-        elif odict.has_key("e") or not odict.has_key("c"):
+        if odict.has_key("e") or not odict.has_key("c"):
             data = getGallery(odict, odict.get("e"), odict.get("c"))
         else:
             data = getPage(odict, odict["c"], odict.get("p"), odict.get("n"))
@@ -79,11 +77,6 @@ def getPage(odict, creature, prev=None, next=None):
     return page.getHTML(creature, prev, next)
 
     
-def getStats(odict):
-    page = Stats(odict)
-    return page.getHTML()
-
-
 class Common:
     
     loc = Location.getInstance()
@@ -140,7 +133,7 @@ class Gallery(Common):
     columns = 5
     
     def getHTML(self, expName=None, creatureName=None):
-        if expName:
+        if expName and creatureName:
             exp = Experiment.Experiment(expName)
             creature = exp.getCreature(creatureName)
             self.addCreature(creature)
@@ -273,156 +266,14 @@ class Page(Common):
 </html>
 """
         return html
+    
  
- 
-class Stats(Common):
-    
-    def getHTML(self):
-        html = self.getHeader()
-        imgs = self.getCreatures()
-        html = html + self.getStats(imgs)
-        html = html + self.getFooter()
-        return html
-
-    
-    def getHeader(self):
-        html = """<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-<head>
-<meta http-equiv="Content-Type" content="application/xhtml+xml" />
-<title>Evolver 2 Gallery Stats</title>
-<link rel="stylesheet" type="text/css" href="%s/gallery.css" />
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
-<script type="text/javascript" src="%s/jquery.scrollTo-1.4.2-min.js"></script>
-</head>
-<body>
-<font size='-1'><a href='/'>Chez Zeus</a> &gt; <a href='%s'>Photo Evolver 2</a> &gt; Gallery Stats</font><p>
-""" % (self.loc.base_url, self.loc.base_url, self.loc.base_url)
-        return html
-    
-    
-    def getStats(self, imgs):
-
-        html = []
-        
-        creatures = self.loadCreatures(imgs)
-        xformCounts = {}
-        depths = {}
-        widths = {}
-        sources = {}
-        xforms = {}
-        for creature in creatures:
-            self.addToHistogram(xformCounts, len(creature.getTransformerPairs()))
-            self.addToHistogram(depths, creature.head.getDepth())
-            self.addToHistogram(widths, creature.head.getWidth())
-            for src in creature.head.getSources():
-                self.addToHistogram(sources, src.getFilename())
-            for xform in creature.head.getTransformers():
-                self.addToHistogram(xforms, xform.__class__.__name__)
-        
-        html.append("<h1>Transformers Histogram</h1>")
-        html.append("<img src='%s'>" % (self.getHistogramCharUrl(xformCounts)))
-        html.append("<h1>Depth Histogram</h1>")
-        html.append("<img src='%s'>" % (self.getHistogramCharUrl(depths)))
-        html.append("<h1>Width Histogram</h1>")
-        html.append("<img src='%s'>" % (self.getHistogramCharUrl(widths)))
-        html.append("<h1>Top Transformers</h1>")
-        html.append(self.getTransformersSection(xforms))
-        html.append("<h1>Top Sources</h1>")
-        html.append(self.getSourcesSection(sources))
-        
-        return string.join(html, "\n")
-    
-
-    def getTop(self, histogram):
-        l = sorted(histogram.items(), key=lambda x:x[1])[-10:]
-        l.reverse()
-        return l
-    
-    
-    def getTransformersSection(self, xforms):
-        html = []
-        html.append("<table border=0>")
-        maxCount = float(max(xforms.values()))
-        for (xform, count) in self.getTop(xforms):
-            href = "%s/col/lateral/examples/index.html#%s" % (self.loc.base_url, xform)
-            html.append("<tr>")
-            html.append("<td><a href='%s''>%s</a></td>" % (href, xform))
-            html.append("<td align='right'>%s</td>" % (count))
-            html.append("<td><div style='width:%dpx;height:10px;background-color:#ffcd0f'></td>" % (count/maxCount * 600))
-            html.append("</tr>")
-        html.append("</table>")
-        return string.join(html, "\n")
-    
-    def getSourcesSection(self, sources):
-        html = []
-        maxCount = float(max(sources.values()))
-        html.append("<table border=0>")
-        for (source, count) in self.getTop(sources):
-            src = SrcImage.SrcImage(source)
-            pageUrl = "%s/col/lateral/srcimgs/%s" % (self.loc.base_url, src.getPageName())
-            thumbUrl = "%s/col/lateral/srcimgs/%s" % (self.loc.base_url, src.getThumbName())
-            html.append("<tr>")
-            html.append("<td><a href='%s'><img src='%s'></a></td>" % (pageUrl, thumbUrl))
-            html.append("<td align='right'>%s</td>" % (count))
-            html.append("<td><div style='width:%dpx;height:10px;background-color:#ffcd0f'></td>" % (count/maxCount * 600))
-            html.append("</tr>")
-        html.append("</table>")
-        return string.join(html, "\n")
-    
-        
-    def getHistogramCharUrl(self, histogram):
-        url = "http://chart.apis.google.com/chart?&cht=bvs&chs=1000x300&chxt=x,y"
-        data = []
-        maxValue = float(max(histogram.values()))
-        for i in xrange(1, max(histogram.keys())+1):
-            # Data is always out of 100.
-            data.append(str(int(round(histogram.get(i, 0)/maxValue * 100.0))))
-        url = url + "&chxr=0,1,%d|1,0,%s&chd=t:%s" % (max(histogram.keys()), int(maxValue), ",".join(data))
-        return url
-        
-        
-    def addToHistogram(self, histogram, count):
-        if not histogram.has_key(count):
-            histogram[count] = 0
-        histogram[count] = histogram[count] + 1
-     
-     
-    def loadCreatures(self, imgs):
-        l = []
-        first = True
-        for img in imgs:
-            abspath = os.path.join(self.dir, img)
-            realpath = os.readlink(abspath)
-            foo = os.path.split(realpath)[0]  # => .../expname/creatures
-            foo = os.path.split(foo)[0]       # => .../expname/
-            expName = os.path.split(foo)[1]   # I <3 Python
-            exp = Experiment.Experiment(expName)
-            if (first == True):
-                exp.loadTransforms()
-                first = False
-            creature = exp.getCreature(self.toName(img))
-            creature.loadConfig()
-            l.append(creature)
-        return l
-
-
-    def getFooter(self):
-        html = """
-</body>
-</html>
-"""
-        return html
-    
-
 def getCGIOptions():
     
     odict = cgi.parse()
     args = []
     
-    if odict.has_key("e"):
-        if not odict.has_key("c"):
-            raise UsageError.UsageError("No creature specified")
-    for opt in ["e", "c", "n", "p", "s3", "stats"]:
+    for opt in ["e", "c", "n", "p", "s3"]:
         if odict.has_key(opt):
             odict[opt] = odict[opt][0]
     
@@ -432,7 +283,7 @@ def getCGIOptions():
 def getOptions():
     
     try:
-        (tt, args) = getopt.getopt( sys.argv[1:], "he:c:n:p:", ["help", "debug", "s3", "stats"] )
+        (tt, args) = getopt.getopt( sys.argv[1:], "he:c:n:p:", ["help", "debug", "s3"] )
     except getopt.error:
         usage( str(sys.exc_info()[1]) )
 
