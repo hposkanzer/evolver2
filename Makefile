@@ -31,14 +31,16 @@ EXECS=get_creatures.py \
 	gallery.py \
 	make_examples.py \
 	make_sources.py \
-	hide_creature.py
+	hide_creature.py \
+	experiments.py
 
 CGIS=Location.py \
 	get_creatures.py \
 	new_creature.py \
 	new_experiment.py \
 	gallery.py \
-	hide_creature.py
+	hide_creature.py \
+	experiments.py
 	
 cgi:
 	/bin/cp -f ${CGIS} ../cgi-bin
