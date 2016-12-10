@@ -11,7 +11,7 @@ clean_exps:
 	find exps/grid/creatures -type f | xargs rm
 	
 clean_gallery:
-	rm gallery/*
+	find gallery -type f | xargs rm
 	
 clean_logs:
 	find logs -name '*.log' | xargs rm
