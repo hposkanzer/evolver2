@@ -7,10 +7,6 @@ import sys
 import logging.handlers
 import ConfigParser
 
-sys.path.append(os.path.expanduser("~/lib/python/PIL/"))
-sys.path.append("/usr/lib64/python2.3/site-packages/PIL")
-sys.path.append("/usr/local/lib/python2.7/site-packages")
-
 import Location
 import Creature
 import ImageLoader
@@ -105,7 +101,7 @@ class Experiment(Picklable.Picklable):
         
 
     ##############################################################
-    def initialize(self, local_only=False, no_op=False, debug=False, tile_mode=False, reflect_mode=False, grid_mode=False):
+    def initialize(self, local_only=True, no_op=False, debug=False, tile_mode=False, reflect_mode=False, grid_mode=False):
         
         t0 = time.time()
         self.logger.info("Initializing %s..." % (self))
@@ -315,7 +311,7 @@ class Experiment(Picklable.Picklable):
     
     
     ##############################################################
-    def initConfig(self, local_only=False, no_op=False, debug=False, tile_mode=False, reflect_mode=False, grid_mode=False):
+    def initConfig(self, local_only=True, no_op=False, debug=False, tile_mode=False, reflect_mode=False, grid_mode=False):
         # For now, we'll copy the default values.
         src = self.loc.toAbsolutePath(self.conf_file)
         dst = os.path.join(self.dir, self.conf_file)

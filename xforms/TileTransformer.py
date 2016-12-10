@@ -1,8 +1,3 @@
-'''
-Created on Aug 8, 2010
-
-@author: hmp@drzeus.best.vwh.net
-'''
 import mono_pil
 
 # A special class that's the end-point of transformer chains when in tile mode.

@@ -11,7 +11,7 @@ clean_exps:
 	find exps/grid/creatures -type f | xargs rm
 	
 clean_gallery:
-	rm gallery/*
+	find gallery -type f | xargs rm
 	
 clean_logs:
 	find logs -name '*.log' | xargs rm
@@ -31,8 +31,20 @@ EXECS=get_creatures.py \
 	gallery.py \
 	make_examples.py \
 	make_sources.py \
-	hide_creature.py
+	hide_creature.py \
+	experiments.py
+
+CGIS=Location.py \
+	get_creatures.py \
+	new_creature.py \
+	new_experiment.py \
+	gallery.py \
+	hide_creature.py \
+	experiments.py
 	
+cgi:
+	/bin/cp -f ${CGIS} ../cgi-bin
+
 xfer:
 	rsync -auv --exclude-from ./rsync_excludes.txt . drzeus.best.vwh.net:www/htdocs/evolver2
 	ssh drzeus.best.vwh.net 'cd www/htdocs/evolver2 && make bestify perms'

@@ -1,8 +1,3 @@
-'''
-Created on Aug 21, 2010
-
-@author: hmp@drzeus.best.vwh.net
-'''
 import os
 import Picklable
 import glob

@@ -8,6 +8,7 @@ import traceback
 import string
 import logging
 
+import Location
 import Picklable
 import Experiment
 
@@ -15,8 +16,8 @@ import Experiment
 def usage( msg=None ):
     if msg:
         sys.stderr.write( "ERROR:  %s\n" % (msg) )
-    sys.stderr.write( "Usage:  %s [--debug] [--local-only] [--tile-mode] [--reflect-mode] [--grid-mode] [--no-op] [name]\n" % (os.path.basename(sys.argv[0])) )
-    sys.stderr.write( "  local-only:  Keep thumbnails on the local disk, instead of S3.\n")
+    sys.stderr.write( "Usage:  %s [--debug] [--s3] [--tile-mode] [--reflect-mode] [--grid-mode] [--no-op] [name]\n" % (os.path.basename(sys.argv[0])) )
+    sys.stderr.write( "  s3:  Keep thumbnails on S3.\n")
     sys.stderr.write( "  tile-mode:  Always apply a TileTransformer first.\n")
     sys.stderr.write( "  reflect-mode:  Always apply a ReflectTransformer last.\n")
     sys.stderr.write( "  grid-mode:  Produce lots of immutable creatures.\n")
@@ -63,7 +64,7 @@ def main():
 def newExperiment(odict, name=None):
     
     exp = Experiment.Experiment(name)
-    exp.initialize(odict.get("local-only", False), 
+    exp.initialize(not odict.get("s3", False), 
                    odict.get("no-op", False), 
                    odict.get("debug", False), 
                    odict.get("tile-mode", False), 
@@ -78,10 +79,10 @@ def getCGIOptions():
     odict = cgi.parse()
     args = []
     
-    if int(odict.get("local-only", [0])[0]):
-        odict["local-only"] = True
+    if int(odict.get("s3", [0])[0]):
+        odict["s3"] = True
     else:
-        odict["local-only"] = False
+        odict["s3"] = False
     
     if int(odict.get("tile-mode", [0])[0]):
         odict["tile-mode"] = True
@@ -114,7 +115,7 @@ def getCGIOptions():
 def getOptions():
     
     try:
-        (tt, args) = getopt.getopt( sys.argv[1:], "h", ["help", "debug", "local-only", "tile-mode", "reflect-mode", "grid-mode", "no-op"] )
+        (tt, args) = getopt.getopt( sys.argv[1:], "h", ["help", "debug", "s3", "tile-mode", "reflect-mode", "grid-mode", "no-op"] )
     except getopt.error:
         usage( str(sys.exc_info()[1]) )
 
@@ -130,8 +131,8 @@ def getOptions():
     if (odict.has_key("h") or odict.has_key("help")):
         usage()
         
-    if odict.has_key("local-only"):
-        odict["local-only"] = True
+    if odict.has_key("s3"):
+        odict["s3"] = True
         
     if odict.has_key("tile-mode"):
         odict["tile-mode"] = True

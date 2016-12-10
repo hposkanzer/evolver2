@@ -1,8 +1,3 @@
-'''
-Created on Aug 5, 2010
-
-@author: hmp@drzeus.best.vwh.net
-'''
 from PIL import Image
 
 import mono_pil

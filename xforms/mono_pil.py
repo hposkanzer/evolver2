@@ -1,8 +1,3 @@
-'''
-Created on Aug 5, 2010
-
-@author: hmp@drzeus.best.vwh.net
-'''
 import os
 import string
 import math
@@ -158,7 +153,7 @@ class _BuiltInDegreeFilter(_xformer._MonoTransformer):
         self.args["filter"] = random.choice(self.filters)
 
     def getArgsString(self):
-        return "(%s)" % (str(self.args["filter"]).split(".")[-1])
+        return "(%s)" % (self.args["filter"].__name__)
 
     def transformImage(self, img):
         return img.filter(self.args["filter"])
@@ -1043,7 +1038,7 @@ class TV(_xformer._MonoTransformer):
         dim = self.args["dim"]
         overlay = Image.new("L", dims, "white")
         for i in range(0, dims[1], rows*2):
-            overlay.paste(255 * dim, (0,i,dims[0],i+rows))
+            overlay.paste(int(round(255 * dim)), (0,i,dims[0],i+rows))
         return ImageChops.multiply(img, overlay.convert("RGB"))
 
     def tweakInner(self):

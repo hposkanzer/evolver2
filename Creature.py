@@ -60,8 +60,8 @@ class Creature(Picklable.Picklable):
     
     def getGalleryURL(self):
         url = "/cgi-bin/gallery.py?e=%s&c=%s" % (self.experiment.getName(), self.getName())
-        if self.experiment.getConfig()["local_only"]:
-            url = url + "&local-only=1"
+        if not self.experiment.getConfig()["local_only"]:
+            url = url + "&s3=1"
         return url
     
     def getInfo(self):
@@ -372,7 +372,7 @@ class Creature(Picklable.Picklable):
             # Return the non-transformer
             xform = self.getRandomSrcImage()
         else:
-            # Return some random transfomer
+            # Return some random transformer
             xform = self.experiment.getRandomTransform()
             for i in range(xform.getExpectedInputCount()):
                 xform.addInput(self.makeGenome(depth - 1))

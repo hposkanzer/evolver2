@@ -354,7 +354,7 @@ function Thumb(ring, parentThumb) {
 	this.name = null;
 	this.div = null;
 	this.img = new Image(); // The full-size image.
-	this.img.src = null;
+	this.img.src = "loading.gif";
 	this.thumb = new Image(); // The thumbnail.
 	this.thumb.src = "loading.gif"; // Initialize it with the "loading" image.
 	this.thumb.className = "qm";

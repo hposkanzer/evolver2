@@ -16,7 +16,7 @@ if not os.path.exists(secret_fname):
 
 class Thumbnailer(Picklable.Picklable):
 	
-	def __init__(self, max_dim, local_only=False):
+	def __init__(self, max_dim, local_only=True):
 		Picklable.Picklable.__init__(self)
 		self.max_dim = max_dim
 		self.local_only = local_only
