@@ -8,7 +8,6 @@ clean_examples:
 	
 clean_exps:
 	find exps -type d -maxdepth 1 -mindepth 1 | grep -v exps/grid | xargs rm -r
-	find exps/grid/creatures -type f | xargs rm
 	
 clean_gallery:
 	find gallery -type f | xargs rm
