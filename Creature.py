@@ -311,10 +311,8 @@ class Creature(Picklable.Picklable):
     def getGenomeFragmentInner(self, rows, xform, i=0):
         if xform.is_non_transformer:
             srcimg = xform.getSrcImage()
-            # Source image thumbnails are always served from the base srcimg dir.
-            fpath = self.experiment.getSrcImageDir(False) + "/" + srcimg.getThumbName()
-            src = self.experiment.tn.getURL(fpath)
-            # And link to the local copy.
+            # Source image thumbnails are served from the local copy.
+            src = "../%s/%s" % (self.experiment.getSrcImageDir(False), srcimg.getThumbName())
             href = "../%s/%s" % (self.experiment.getSrcImageDir(False), srcimg.getPageName())
             tdData = "<a href='%s'><img class='linkedthumb' src='%s'><br>%s</a>" % (href, src, srcimg.getFilename())
             tdClass = "genomeCell srcimgCell"

@@ -101,7 +101,7 @@ class Experiment(Picklable.Picklable):
         
 
     ##############################################################
-    def initialize(self, local_only=True, no_op=False, debug=False, tile_mode=False, reflect_mode=False, grid_mode=False):
+    def initialize(self, local_only=True, no_op=False, debug=False, tile_mode=False, reflect_mode=False, grid_mode=False, frame=None):
         
         t0 = time.time()
         self.logger.info("Initializing %s..." % (self))
@@ -122,7 +122,10 @@ class Experiment(Picklable.Picklable):
         self.copyFromBase(self.left_img)
         self.copyFromBase(self.right_img)
         # For now we're going to use the same set of images & xforms for every experiment.
-        self.copyFromBase(self.srcimg_dir)
+        if frame != None:
+            self.linkOrCopy(os.path.join(self.loc.base_dir, "frames", "%04d" % (frame)), os.path.join(self.dir, self.srcimg_dir))
+        else:
+            self.copyFromBase(self.srcimg_dir)
         self.copyFromBase(self.xforms_dir)
         self.copyFromBase(self.examples_dir)
         # Create the directory for all the creatures.
@@ -363,5 +366,5 @@ class Experiment(Picklable.Picklable):
                         shutil.copy(os.path.join(src, fname), dst)
         else:
             self.logger.debug("Linking %s to %s..." % (src, dst))
-            os.symlink(src, dst) #@UndefinedVariable
+            os.symlink(src, dst)
 

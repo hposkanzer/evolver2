@@ -16,12 +16,13 @@ import Experiment
 def usage( msg=None ):
     if msg:
         sys.stderr.write( "ERROR:  %s\n" % (msg) )
-    sys.stderr.write( "Usage:  %s [--debug] [--s3] [--tile-mode] [--reflect-mode] [--grid-mode] [--no-op] [name]\n" % (os.path.basename(sys.argv[0])) )
+    sys.stderr.write( "Usage:  %s [--debug] [--s3] [--tile-mode] [--reflect-mode] [--grid-mode] [--no-op] [--frame frame] [name]\n" % (os.path.basename(sys.argv[0])) )
     sys.stderr.write( "  s3:  Keep thumbnails on S3.\n")
     sys.stderr.write( "  tile-mode:  Always apply a TileTransformer first.\n")
     sys.stderr.write( "  reflect-mode:  Always apply a ReflectTransformer last.\n")
     sys.stderr.write( "  grid-mode:  Produce lots of immutable creatures.\n")
     sys.stderr.write( "  no-op:  Do not generate creatures or preserve state.\n")
+    sys.stderr.write( "  frame:  Use source images from this video frame.\n")
     sys.stderr.write( "  name:  Create this experiment name.  If not provided, a name is generated.\n")
     sys.exit(-1)
     
@@ -69,7 +70,8 @@ def newExperiment(odict, name=None):
                    odict.get("debug", False), 
                    odict.get("tile-mode", False), 
                    odict.get("reflect-mode", False), 
-                   odict.get("grid-mode", False))
+                   odict.get("grid-mode", False),
+                   odict.get("frame"))
     
     return exp.getURL()
 
@@ -104,6 +106,9 @@ def getCGIOptions():
     else:
         odict["no-op"] = False
 
+    if odict.has_key("frame"):
+        odict["frame"] = int(odict["frame"][0])
+
     if int(odict.get("debug", [0])[0]):
         odict["debug"] = True
     else:
@@ -115,7 +120,7 @@ def getCGIOptions():
 def getOptions():
     
     try:
-        (tt, args) = getopt.getopt( sys.argv[1:], "h", ["help", "debug", "s3", "tile-mode", "reflect-mode", "grid-mode", "no-op"] )
+        (tt, args) = getopt.getopt( sys.argv[1:], "h", ["help", "debug", "s3", "tile-mode", "reflect-mode", "grid-mode", "no-op", "frame="] )
     except getopt.error:
         usage( str(sys.exc_info()[1]) )
 
@@ -145,6 +150,9 @@ def getOptions():
         
     if odict.has_key("no-op"):
         odict["no-op"] = True
+        
+    if odict.has_key("frame"):
+        odict["frame"] = int(odict["frame"])
 
     return (odict, args)
 
