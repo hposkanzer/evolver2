@@ -72,8 +72,7 @@ class ImageLoader(Picklable.Picklable):
             if self.isThumbnail(fname):
                 continue
             
-            if (fname[-8:] == "0001.jpg"):
-                imgs.append(os.path.join(dir, fname))
+            imgs.append(os.path.join(dir, fname))
             
         self.logger.debug("Loaded %s" % (map(os.path.basename, imgs)))
         return imgs

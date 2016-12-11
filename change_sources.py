@@ -45,7 +45,7 @@ def newCreature(odict, exp, source, destination, source_map={}):
 def newCreatureInner(odict, exp, creature, destination, source_map={}):
     creature.id = destination
     changeSources(creature, source_map)
-    print "Generatiing %s..." % (destination)
+    print "Generating %s..." % (destination)
     creature.saveConfig()
     creature.run()
     return creature.getInfo()

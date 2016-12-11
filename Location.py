@@ -3,7 +3,7 @@ import sys
 import string
 
 instance = None
-home_base = "/Users/hmp/Documents/best/www/evolver2"
+home_base = "/Users/hmp/Documents/workspace/Vevolver"
 prod_base = "/home/drzeus/www/evolver2"
 
 sys.path.append(home_base)
@@ -34,7 +34,7 @@ class Location:
 
         # Home Mac
         self.base_dir = home_base
-        self.base_url = "http://localhost:8080/www/%s" % (self.project_name)
+        self.base_url = "http://localhost:8080/vevolver"
         if not os.path.isdir(self.base_dir):
             # Production
             self.base_dir = prod_base
