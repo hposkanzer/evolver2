@@ -44,6 +44,12 @@ CGIS=Location.py \
 	
 cgi:
 	/bin/cp -f ${CGIS} ../cgi-bin
+	
+localcgi:
+	@for CGI in ${CGIS}; do \
+        rm ~/Sites/cgi-bin/$$CGI; \
+        ln -s `pwd`/$$CGI ~/Sites/cgi-bin; \
+    done
 
 xfer:
 	rsync -auv --exclude-from ./rsync_excludes.txt . drzeus.best.vwh.net:www/htdocs/evolver2
