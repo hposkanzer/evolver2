@@ -43,7 +43,7 @@ class SourceGenerator(Picklable.Picklable):
         t0 = time.time()
         self.logger.info("Generating source images...")
         self.config = self.loadConfig()
-        self.tn = Thumbnailer.Thumbnailer(self.config["thumbnail_size"], not self.odict.get("s3", True))
+        self.tn = Thumbnailer.Thumbnailer(self.config["thumbnail_size"], not self.odict.get("s3", False))
         self.loadSrcImages()
         self.scaleImages()
         self.makeSrcImageThumbs()

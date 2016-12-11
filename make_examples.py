@@ -18,9 +18,8 @@ import Picklable
 def usage( msg=None ):
     if msg:
         sys.stderr.write( "ERROR:  %s\n" % (msg) )
-    sys.stderr.write( "Usage:  %s [--debug] [--s3] [-s srcimg_dir] [-e examples_dir] [xform ...]\n" % (os.path.basename(sys.argv[0])) )
+    sys.stderr.write( "Usage:  %s [--debug] [--s3] [-s srcimg_dir] [xform ...]\n" % (os.path.basename(sys.argv[0])) )
     sys.stderr.write( "  -s:  Use this dir for source images.  Defaults to './srcimgs'.\n")
-    sys.stderr.write( "  -e:  Use this dir for the output.  Defaults to './examples'.\n")
     sys.stderr.write( "  xform:  Only execute these transformers.\n")
     sys.exit(-1)
 
@@ -134,7 +133,7 @@ class ExampleGenerator(Picklable.Picklable):
         
         
     def getDir(self):
-        return self.odict["e"]
+        return "examples"
     
     def getSrcDir(self):
         return self.odict["s"]
