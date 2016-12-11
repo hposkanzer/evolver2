@@ -7,13 +7,13 @@
 
 .qm {
 	width: 150px;
-	height: 112px;
+	height: 84px;
 	border: 1px rgb(0, 0, 0) solid;
 }
 
 .thumb {
 	width: 150px;
-	height: 112px;
+	height: 84px;
 	border: 1px rgb(0, 0, 255) solid;
 	cursor: hand;
 }
@@ -30,8 +30,8 @@
 }
 
 #creature {
-	width: 1920px;
-	height: 1080px;
+	width: 800px;
+	height: 450px;
 	vertical-align: middle;
 }
 

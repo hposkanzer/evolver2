@@ -3,19 +3,19 @@
 .thumb {
 	border: 1px rgb(0, 0, 0) solid;
 	width: 150px;
-	height: 112px;
+	height: 84px;
 }
 
 .linkedthumb {
 	border: 1px rgb(0, 0, 255) solid;
 	width: 150px;
-	height: 112px;
+	height: 84px;
 }
 
 .image {
 	border: 1px rgb(0, 0, 0) solid;
-	width: 1920px;
-	height: 1080px;
+	width: 800px;
+	height: 450px;
 }
 
 .genomeTable {

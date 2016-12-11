@@ -37,7 +37,7 @@ var thumbInitialCount = 5; // Default value
 var thumbCountIncrement = 5; // Default value
 //Creatures are all in landscape orientation for now.
 var thumbWidth = 72; // +2 to include the border
-var thumbHeight = 54; // +2 to include the border
+var thumbHeight = 41; // +2 to include the border
 
 //Dialog stuff
 var zoomerInitialOpacity = 0.7;
