@@ -22,7 +22,8 @@ source_map_formats = {
 def usage( msg=None ):
     if msg:
         sys.stderr.write( "ERROR:  %s\n" % (msg) )
-    sys.stderr.write( "Usage:  %s -e exp -s source\n" % (os.path.basename(sys.argv[0])) )
+    sys.stderr.write( "Usage:  %s [-m freq] -e exp -s source\n" % (os.path.basename(sys.argv[0])) )
+    sys.stderr.write( "  freq:  Mutate every freq frames. Defaults to 0 (never).\n")
     sys.stderr.write( "  exp:  The name of the experiment in which to create the creature.\n")
     sys.stderr.write( "  source:  The name of the source creature.\n")
     sys.exit(-1)
@@ -33,10 +34,10 @@ def main():
     (odict, args) = getOptions()
     (odict, args) = processOptions(odict, args)
         
-    evolveFrames(odict, odict["e"], odict["s"])
+    evolveFrames(odict, odict["e"], odict["s"], odict["m"])
 
 
-def evolveFrames(odict, exp, source):
+def evolveFrames(odict, exp, source, mutationFreq = 0):
     exp = Experiment.Experiment(exp)
     exp.loadConfig()
     exp.loadImages()
@@ -45,7 +46,7 @@ def evolveFrames(odict, exp, source):
     source.loadConfig()
     source_id = source.id
     for frame in range(1, 101):
-        if (frame % 10 == 0):
+        if (mutationFreq > 0 and frame % mutationFreq == 0):
             print "Evolving..."
             source.evolve()
         evolveFrame(odict, exp, source, source_id, frame)
@@ -62,7 +63,7 @@ def evolveFrame(odict, exp, source, source_id, frame):
 def getOptions():
     
     try:
-        (tt, args) = getopt.getopt( sys.argv[1:], "he:s:", ["help", "debug"] )
+        (tt, args) = getopt.getopt( sys.argv[1:], "hm:e:s:", ["help", "debug"] )
     except getopt.error:
         usage( str(sys.exc_info()[1]) )
 
@@ -78,6 +79,10 @@ def getOptions():
     if (odict.has_key("h") or odict.has_key("help")):
         usage()
 
+    if not odict.has_key("m"):
+        odict["m"] = "0"
+    odict["m"] = int(odict["m"])
+    
     if not odict.has_key("e"):
         usage()
     if not odict.has_key("s"):
