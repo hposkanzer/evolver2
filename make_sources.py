@@ -17,8 +17,8 @@ import Picklable
 def usage( msg=None ):
     if msg:
         sys.stderr.write( "ERROR:  %s\n" % (msg) )
-    sys.stderr.write( "Usage:  %s [--debug] [--s3] [-s srcimg_dir]\n" % (os.path.basename(sys.argv[0])) )
-    sys.stderr.write( "  -s:  Use this dir for source images.  Defaults to './srcimgs'.\n")
+    sys.stderr.write( "Usage:  %s [--debug] [--s3] srcimgs [...]\n" % (os.path.basename(sys.argv[0])) )
+    sys.stderr.write( "  srcimgs:  Use this dir for source images.  Defaults to './srcimgs'.\n")
     sys.exit(-1)
 
 
@@ -26,22 +26,23 @@ def main():
     
     Experiment.initLogging()
     (odict, args) = getOptions()
-    g = SourceGenerator(odict)
-    g.generateSources()
+    for dir in args:
+        g = SourceGenerator(dir, odict)
+        g.generateSources()
 
 
 class SourceGenerator(Picklable.Picklable):
 
-    srcimgs = []
-    
-    def __init__(self, odict):
+    def __init__(self, dir, odict):
         Picklable.Picklable.__init__(self)
+        self.dir = dir
         self.odict = odict
+        self.srcimgs = []
         
     
     def generateSources(self):
         t0 = time.time()
-        self.logger.info("Generating source images...")
+        self.logger.info("Generating source images in %s..." % (self.dir))
         self.config = self.loadConfig()
         self.tn = Thumbnailer.Thumbnailer(self.config["thumbnail_size"], not self.odict.get("s3", False))
         self.loadSrcImages()
@@ -136,13 +137,13 @@ class SourceGenerator(Picklable.Picklable):
             
             
     def getDir(self):
-        return self.odict["s"]
+        return self.dir
              
             
 def getOptions():
     
     try:
-        (tt, args) = getopt.getopt( sys.argv[1:], "hs:", ["help", "debug", "s3"] )
+        (tt, args) = getopt.getopt( sys.argv[1:], "h", ["help", "debug", "s3"] )
     except getopt.error:
         usage( str(sys.exc_info()[1]) )
 
@@ -158,17 +159,14 @@ def getOptions():
     if (odict.has_key("h") or odict.has_key("help")):
         usage()
 
-    if (len(args) > 0):
-        usage()
-        
     if odict.has_key("debug"):
         logging.getLogger().setLevel(logging.DEBUG)
         
     if odict.has_key("s3"):
         odict["s3"] = True
         
-    if not odict.has_key("s"):
-        odict["s"] = Experiment.Experiment.srcimg_dir
+    if len(args) == 0:
+        args.append(Experiment.Experiment.srcimg_dir)
 
     return odict, args
 
