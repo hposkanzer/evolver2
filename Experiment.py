@@ -123,6 +123,9 @@ class Experiment(Picklable.Picklable):
         self.copyFromBase(self.right_img)
         # For now we're going to use the same set of images & xforms for every experiment.
         if frame != None:
+            if frame == -1:
+                frame = int(random.choice(os.listdir(os.path.join(self.loc.base_dir, "frames"))))
+                self.logger.info("Using sources from frame %d." % (frame))
             self.linkOrCopy(os.path.join(self.loc.base_dir, "frames", "%04d" % (frame)), os.path.join(self.dir, self.srcimg_dir))
         else:
             self.copyFromBase(self.srcimg_dir)

@@ -22,7 +22,7 @@ def usage( msg=None ):
     sys.stderr.write( "  reflect-mode:  Always apply a ReflectTransformer last.\n")
     sys.stderr.write( "  grid-mode:  Produce lots of immutable creatures.\n")
     sys.stderr.write( "  no-op:  Do not generate creatures or preserve state.\n")
-    sys.stderr.write( "  frame:  Use source images from this video frame.\n")
+    sys.stderr.write( "  frame:  Use source images from this video frame instead of srcimgs. If -1, pick a random frame.\n")
     sys.stderr.write( "  name:  Create this experiment name.  If not provided, a name is generated.\n")
     sys.exit(-1)
     
