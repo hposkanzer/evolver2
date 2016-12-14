@@ -8,6 +8,8 @@ import shutil
 import Experiment
 import Creature
 import change_sources
+import progress
+
 
 def usage( msg=None ):
     if msg:
@@ -36,27 +38,32 @@ def evolveFrames(odict, expName, sourceName, mutationFreq = 0):
         os.mkdir(outDir)
     source = Creature.Creature(exp, sourceName)
     source.loadConfig()
-    source_id = source.id
-    for frame in range(1, 601):
-        if (mutationFreq > 0 and frame % mutationFreq == 0):
-            print "Evolving..."
-            source.evolve()
-        source.id = source_id + ".%04d" % (frame)
-        print "Generating %s..." % (source.id)
-        source.saveConfig()
-        # Update the srcimgs symlink to the correct frame.
-        os.remove(exp.getSrcImageDir())
-        os.symlink(os.path.join(exp.loc.base_dir, "frames", "%04d" % (frame)), exp.getSrcImageDir())
-        # Generate it.
-        source.run()
-        # Move it into the final location.
-        src = os.path.join(exp.getCreaturesDir(), source.getImageName())
-        dst = os.path.join(outDir, "%04d.jpg" % (frame))
-        shutil.move(src, dst)
-        # Delete the extraneous files.
-        for fname in [source.getPageName(), source.getThumbName(), source.getPickleName()]:
-            os.remove(os.path.join(exp.getCreaturesDir(), fname))
+    orig_id = source.id
+    def wrapper(frame):
+        evolveFrame(odict, exp, source, orig_id, outDir, frame, mutationFreq)
+    progress.ProgressBar(range(1, 601), wrapper, newlines=1).start()
         
+        
+def evolveFrame(odict, exp, source, orig_id, outDir, frame, mutationFreq = 0):
+    if (mutationFreq > 0 and frame % mutationFreq == 0):
+        print "Evolving..."
+        source.evolve()
+    source.id = orig_id + ".%04d" % (frame)
+    print "Generating %s..." % (source.id)
+    source.saveConfig()
+    # Update the srcimgs symlink to the correct frame.
+    os.remove(exp.getSrcImageDir())
+    os.symlink(os.path.join(exp.loc.base_dir, "frames", "%04d" % (frame)), exp.getSrcImageDir())
+    # Generate it.
+    source.run()
+    # Move it into the final location.
+    src = os.path.join(exp.getCreaturesDir(), source.getImageName())
+    dst = os.path.join(outDir, "%04d.jpg" % (frame))
+    shutil.move(src, dst)
+    # Delete the extraneous files.
+    for fname in [source.getPageName(), source.getThumbName(), source.getPickleName()]:
+        os.remove(os.path.join(exp.getCreaturesDir(), fname))
+    
         
 def getOptions():
     
