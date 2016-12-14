@@ -21,7 +21,7 @@ def main():
     result = findFavs(args)
     ll = []
     for (creature, exp) in result.items():
-        ll.append(os.path.join("exps", exp, "creatures", creature))
+        ll.append("%s %s" % (exp, creature))
     ll.sort()
     print "\n".join(ll)
 
@@ -29,9 +29,10 @@ def main():
 def findFavs(favs):
     result = {}
     for fav in favs:
-        exp = findExp(os.path.splitext(os.path.basename(fav))[0])
+        creature = os.path.splitext(os.path.basename(fav))[0]
+        exp = findExp(creature)
         if exp != None:
-            result[fav] = exp
+            result[creature] = exp
     return result
 
     

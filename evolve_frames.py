@@ -26,10 +26,10 @@ def main():
     (odict, args) = getOptions()
     (odict, args) = processOptions(odict, args)
         
-    evolveFrames(odict, odict["e"], odict["c"], odict["m"])
+    evolveFrames(odict["e"], odict["c"], odict["m"])
 
 
-def evolveFrames(odict, expName, sourceName, mutationFreq = 0):
+def evolveFrames(expName, sourceName, mutationFreq = 0):
     exp = Experiment.Experiment(expName)
     exp.loadConfig()
     exp.loadTransforms()
@@ -40,11 +40,11 @@ def evolveFrames(odict, expName, sourceName, mutationFreq = 0):
     source.loadConfig()
     orig_id = source.id
     def wrapper(frame):
-        evolveFrame(odict, exp, source, orig_id, outDir, frame, mutationFreq)
+        evolveFrame(exp, source, orig_id, outDir, frame, mutationFreq)
     progress.ProgressBar(range(1, 601), wrapper, newlines=1).start()
         
         
-def evolveFrame(odict, exp, source, orig_id, outDir, frame, mutationFreq = 0):
+def evolveFrame(exp, source, orig_id, outDir, frame, mutationFreq = 0):
     if (mutationFreq > 0 and frame % mutationFreq == 0):
         print "Evolving..."
         source.evolve()
