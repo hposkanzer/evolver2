@@ -89,6 +89,8 @@ class ProgressBar:
 
 
 	def printBar( self, done_width, pct_done, remain_secs ):
+		if (self.i >= self.item_count-1):
+			remain_secs = time.time() - self.t0  # Last one, print elapsed time.
 		etr = "%02d:%02d:%02d" % (remain_secs/3600, (remain_secs % 3600)/60, round(remain_secs) % 60)
 		s = "\r|" + ("=" * done_width) + ("-" * (self.progress_width - done_width)) + "| %3.0f%%  %s"  % (pct_done * 100, etr)
 		sys.stdout.write( s )
