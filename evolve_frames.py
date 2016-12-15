@@ -45,6 +45,9 @@ def evolveFrames(expName, sourceName, mutationFreq = 0):
         
         
 def evolveFrame(exp, source, orig_id, outDir, frame, mutationFreq = 0):
+    dst = os.path.join(outDir, "%04d.jpg" % (frame))
+    if os.path.exists(dst):
+        return
     if (mutationFreq > 0 and frame % mutationFreq == 0):
         print "Evolving..."
         source.evolve()
@@ -58,7 +61,6 @@ def evolveFrame(exp, source, orig_id, outDir, frame, mutationFreq = 0):
     source.run()
     # Move it into the final location.
     src = os.path.join(exp.getCreaturesDir(), source.getImageName())
-    dst = os.path.join(outDir, "%04d.jpg" % (frame))
     shutil.move(src, dst)
     # Delete the extraneous files.
     for fname in [source.getPageName(), source.getThumbName(), source.getPickleName()]:

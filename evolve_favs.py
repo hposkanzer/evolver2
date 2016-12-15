@@ -24,13 +24,13 @@ def main():
     (odict, args) = getOptions()
     (odict, args) = processOptions(odict, args)
 
-    def evolveFav(tup):
-        (fav, exp) = tup
-        print "Evolving %s/%s..." % (exp, fav)
+    tups = find_favs.findFavs(args).items()
+    for i in range(len(tups)):
+        (fav, exp) = tups[i]
+        print "[%d/%d] Evolving %s/%s..." % (i + 1, len(tups), exp, fav)
         evolve_frames.evolveFrames(exp, fav, odict["m"])
+        i = i + 1
         
-    progress.ProgressBar(find_favs.findFavs(args).items(), evolveFav, newlines=1).start()
-
     
 def getOptions():
     
