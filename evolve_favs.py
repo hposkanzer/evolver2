@@ -7,7 +7,6 @@ import shutil
 
 import find_favs
 import evolve_frames
-import progress
 
 
 def usage( msg=None ):

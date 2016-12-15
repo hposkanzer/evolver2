@@ -31,7 +31,8 @@ def splitFrames(fnames, outdir, rate=10):
         basename = os.path.splitext(os.path.basename(fname))[0] + ".jpg"
         cmd = "/usr/local/bin/ffmpeg -i %s -r %d -vf rotate=PI -f image2 '%s/%s.%%04d'" % (fname, rate, tmpdir, basename)
         print "[%s/%d] Running %s..." % (fnames.index(fname) + 1, len(fnames), cmd)
-        os.system(cmd)
+        if (os.system(cmd)):
+            raise "Error"
         shuffle(tmpdir, outdir)
         
 
