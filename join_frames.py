@@ -39,10 +39,12 @@ def joinFrames(expName, creatureName, rate=10):
     if os.path.exists(outFile):
         return
     inDir = os.path.join(exp.getCreaturesDir(), creature.getName())
-    cmd = "/usr/local/bin/ffmpeg -f image2 -pattern_type glob -framerate %d -i '%s/*.jpg' %s" % (rate, inDir, outFile)
+    tmpFile = os.path.join(exp.getCreaturesDir(), creature.getName() + ".tmp.mp4")
+    cmd = "/usr/local/bin/ffmpeg -y -f image2 -pattern_type glob -framerate %d -i '%s/*.jpg' %s" % (rate, inDir, tmpFile)
     print "Running %s..." % (cmd)
     if (os.system(cmd)):
         raise "Error"
+    shutil.move(tmpFile, outFile)
         
         
 def getOptions():
