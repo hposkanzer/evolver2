@@ -14,8 +14,9 @@ import progress
 def usage( msg=None ):
     if msg:
         sys.stderr.write( "ERROR:  %s\n" % (msg) )
-    sys.stderr.write( "Usage:  %s [-m freq] -e exp -c creature\n" % (os.path.basename(sys.argv[0])) )
+    sys.stderr.write( "Usage:  %s [-m freq] [-f frame] -e exp -c creature\n" % (os.path.basename(sys.argv[0])) )
     sys.stderr.write( "  freq:  Mutate every freq frames. Defaults to 0 (never).\n")
+    sys.stderr.write( "  frame:  Use this frame as the source instead of progressing through all frames.\n")
     sys.stderr.write( "  exp:  The name of the experiment in which to create the creature.\n")
     sys.stderr.write( "  creature:  The name of the source creature.\n")
     sys.exit(-1)
@@ -26,13 +27,14 @@ def main():
     (odict, args) = getOptions()
     (odict, args) = processOptions(odict, args)
         
-    evolveFrames(odict["e"], odict["c"], odict["m"])
+    evolveFrames(odict["e"], odict["c"], odict["m"], odict["f"])
 
 
-def evolveFrames(expName, sourceName, mutationFreq = 0):
+def evolveFrames(expName, sourceName, mutationFreq = 0, sourceFrame = -1):
     exp = Experiment.Experiment(expName)
     exp.loadConfig()
     exp.loadTransforms()
+    exp.loadImages()
     outDir = os.path.join(exp.getCreaturesDir(), sourceName)
     if not os.path.exists(outDir):
         os.mkdir(outDir)
@@ -40,23 +42,30 @@ def evolveFrames(expName, sourceName, mutationFreq = 0):
     source.loadConfig()
     orig_id = source.id
     def wrapper(frame):
-        evolveFrame(exp, source, orig_id, outDir, frame, mutationFreq)
+        evolveFrame(exp, source, orig_id, outDir, frame, mutationFreq, sourceFrame)
     progress.ProgressBar(range(1, 601), wrapper, newlines=1).start()
         
         
-def evolveFrame(exp, source, orig_id, outDir, frame, mutationFreq = 0):
+def evolveFrame(exp, source, orig_id, outDir, frame, mutationFreq = 0, sourceFrame = -1):
     dst = os.path.join(outDir, "%04d.jpg" % (frame))
     if os.path.exists(dst):
         return
+    # Update the srcimgs symlink to the correct frame.
+    os.remove(exp.getSrcImageDir())
+    if (sourceFrame == -1):
+        frm = frame
+    else:
+        frm = sourceFrame
+    srcDir = os.path.join(exp.loc.base_dir, "frames", "%04d" % (frm))
+    os.symlink(srcDir, exp.getSrcImageDir())
+    # Maybe mutate it.
     if (mutationFreq > 0 and frame % mutationFreq == 0):
         print "Evolving..."
         source.evolve()
+    # Save the temporary config.
     source.id = orig_id + ".%04d" % (frame)
     print "Generating %s..." % (source.id)
     source.saveConfig()
-    # Update the srcimgs symlink to the correct frame.
-    os.remove(exp.getSrcImageDir())
-    os.symlink(os.path.join(exp.loc.base_dir, "frames", "%04d" % (frame)), exp.getSrcImageDir())
     # Generate it.
     source.run()
     # Move it into the final location.
@@ -64,13 +73,13 @@ def evolveFrame(exp, source, orig_id, outDir, frame, mutationFreq = 0):
     shutil.move(src, dst)
     # Delete the extraneous files.
     for fname in [source.getPageName(), source.getThumbName(), source.getPickleName()]:
-        os.remove(os.path.join(exp.getCreaturesDir(), fname))
+        pass #os.remove(os.path.join(exp.getCreaturesDir(), fname))
     
         
 def getOptions():
     
     try:
-        (tt, args) = getopt.getopt( sys.argv[1:], "hm:e:c:", ["help", "debug"] )
+        (tt, args) = getopt.getopt( sys.argv[1:], "hm:f:e:c:", ["help", "debug"] )
     except getopt.error:
         usage( str(sys.exc_info()[1]) )
 
@@ -90,6 +99,10 @@ def getOptions():
         odict["m"] = "0"
     odict["m"] = int(odict["m"])
     
+    if not odict.has_key("f"):
+        odict["f"] = "-1"
+    odict["f"] = int(odict["f"])
+
     if not odict.has_key("e"):
         usage()
     if not odict.has_key("c"):
