@@ -105,14 +105,18 @@ class Creature(Picklable.Picklable):
     def mutate(self):
         if (random.random() <= self.experiment.getConfig()["mutation_rate"]):
             mutation_funcs = [
-                              "insertTransformer",
-                              "deleteTransformer",
+                              "replaceTransformer",
                               "swapTransformers",
                               ]
             getattr(self, random.choice(mutation_funcs))()
         else:
             self.logger.debug("%s did not mutate." % (self))
 
+        
+    def replaceTransformer(self):
+        self.deleteTransformer()
+        self.insertTransformer()
+        
         
     def insertTransformer(self):
         
