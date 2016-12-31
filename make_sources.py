@@ -12,6 +12,7 @@ import Experiment
 import SrcImage
 import Thumbnailer
 import Picklable
+import progress
 
 
 def usage( msg=None ):
@@ -26,9 +27,10 @@ def main():
     
     Experiment.initLogging()
     (odict, args) = getOptions()
-    for dir in args:
+    def wrapper(dir):
         g = SourceGenerator(dir, odict)
         g.generateSources()
+    progress.ProgressBar(args, wrapper, newlines=1).start()
 
 
 class SourceGenerator(Picklable.Picklable):
@@ -52,7 +54,6 @@ class SourceGenerator(Picklable.Picklable):
         self.writeSrcImagePages()
         self.saveConfig(self.config) # Write all the discovered dimensions back to config.json.
         t1 = time.time()
-        self.logger.info("Generation complete in %.2f seconds." % (t1-t0))
 
     
     def loadSrcImages(self):
