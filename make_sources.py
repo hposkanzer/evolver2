@@ -17,7 +17,7 @@ import Picklable
 def usage( msg=None ):
     if msg:
         sys.stderr.write( "ERROR:  %s\n" % (msg) )
-    sys.stderr.write( "Usage:  %s [--debug] [--s3] srcimgs [...]\n" % (os.path.basename(sys.argv[0])) )
+    sys.stderr.write( "Usage:  %s [--debug] [--s3] [srcimgs ...]\n" % (os.path.basename(sys.argv[0])) )
     sys.stderr.write( "  srcimgs:  Use this dir for source images.  Defaults to './srcimgs'.\n")
     sys.exit(-1)
 
@@ -77,7 +77,8 @@ class SourceGenerator(Picklable.Picklable):
         self.logger.debug("Making source thumbnails...")
         for srcimg in self.srcimgs:
             fpath = srcimg.getThumbPath()
-            self.tn.makeThumb(srcimg.getImage(), fpath)
+            if not os.path.exists(fpath):
+                self.tn.makeThumb(srcimg.getImage(), fpath)
         if self.srcimgs:
             srcimg = self.srcimgs[0]
             dims = Image.open(srcimg.getThumbPath()).size
