@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/local/bin/python
 
 import cgi
 import os
@@ -11,6 +11,8 @@ import logging
 import Location
 import Picklable
 import Experiment
+
+from twython import Twython
 
 
 def usage( msg=None ):
@@ -38,9 +40,7 @@ def main():
         else:
             exp = newExperiment(odict)
         creature = newCreature(odict, exp)
-        url = os.path.join(exp.getURL(), creature.getPageURL())
-        file = os.path.join(exp.getCreaturesDir(), creature.getImageName())
-        logging.getLogger().info("Posting %s as %s..." % (file, url))
+        tweet(creature)
 
     except:
         msg = string.join(apply( traceback.format_exception, sys.exc_info() ), "")
@@ -67,6 +67,19 @@ def newCreature(odict, exp):
     
     creature = exp.newCreature(None)
     return creature
+    
+
+def tweet(creature):
+    
+    logging.getLogger().info("Posting %s as %s..." % (creature.getImagePath(), creature.getFullPageURL()))
+    f = open(Location.getInstance().toAbsolutePath(".twitter.json"))
+    creds = Location.getJsonModule().load(f)
+    f.close()
+    twitter = Twython(creds["app"], creds["app_secret"], creds["token"], creds["token_secret"])
+    photo = open(creature.getImagePath(), 'rb')
+    response = twitter.upload_media(media=photo)
+    response = twitter.update_status(status=creature.getFullPageURL(), media_ids=[response['media_id']])
+    logging.getLogger().info("Posted as %s." % (response["id_str"]))
     
 
 def getOptions():

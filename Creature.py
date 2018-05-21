@@ -38,6 +38,9 @@ class Creature(Picklable.Picklable):
     def getImageName(self):
         return "%s.jpg" % (self.getName())
     
+    def getImagePath(self):
+        return os.path.join(self.experiment.getCreaturesDir(), self.getImageName())
+    
     def getPageName(self):
         return "%s.html" % (self.getName())
     
@@ -49,6 +52,9 @@ class Creature(Picklable.Picklable):
     
     def getPageURL(self):
         return self.experiment.getCreaturesDir(False) + "/" + self.getPageName()
+    
+    def getFullPageURL(self):
+        return os.path.join(self.experiment.getURL(), self.getPageURL())
 
     def getImageURL(self):
         return self.experiment.getCreaturesDir(False) + "/" + self.getImageName()
