@@ -40,7 +40,7 @@ def main():
         else:
             exp = newExperiment(odict)
         creature = newCreature(odict, exp)
-        tweet(creature)
+        tweet(odict, creature)
 
     except:
         msg = string.join(apply( traceback.format_exception, sys.exc_info() ), "")
@@ -69,17 +69,17 @@ def newCreature(odict, exp):
     return creature
     
 
-def tweet(creature):
+def tweet(odict, creature):
     
-    logging.getLogger().info("Posting %s as %s..." % (creature.getImagePath(), creature.getFullPageURL()))
-    f = open(Location.getInstance().toAbsolutePath(".twitter.json"))
-    creds = Location.getJsonModule().load(f)
-    f.close()
+    logger = logging.getLogger()
+    logger.info("Posting %s as %s..." % (creature.getImagePath(), creature.getFullPageURL()))
+    creds = Location.getJsonModule().load(open(Location.getInstance().toAbsolutePath(".twitter.json")))
     twitter = Twython(creds["app"], creds["app_secret"], creds["token"], creds["token_secret"])
     photo = open(creature.getImagePath(), 'rb')
-    response = twitter.upload_media(media=photo)
-    response = twitter.update_status(status=creature.getFullPageURL(), media_ids=[response['media_id']])
-    logging.getLogger().info("Posted as %s." % (response["id_str"]))
+    if (not odict.get("no-op", False)):
+        response = twitter.upload_media(media=photo)
+        response = twitter.update_status(status=creature.getFullPageURL(), media_ids=[response['media_id']])
+        logger.info("Posted as %s." % (response["id_str"]))
     
 
 def getOptions():
